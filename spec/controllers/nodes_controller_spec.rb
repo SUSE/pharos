@@ -95,5 +95,19 @@ RSpec.describe NodesController, type: :controller do
       end
       expect(response.status).to eq 302
     end
+
+    context "a role fails to be assigned" do
+      # rubocop:disable AnyInstance
+      before do
+        allow_any_instance_of(Minion).to receive(:assign_role).and_return(false)
+      end
+      # rubocop:enable AnyInstance
+      it "retries to assign this role" do
+        VCR.use_cassette("salt/bootstrap", record: :none) do
+          post :bootstrap
+        end
+        expect(assigns(:available_roles).length).to eq(1)
+      end
+    end
   end
 end
