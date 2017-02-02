@@ -24,7 +24,6 @@ class NodesController < ApplicationController
   def bootstrap
     if Minion.where(role: nil).count > 1
       Minion.assign_roles(roles: [:master], default_role: :minion)
-      Pharos::Salt.call action: "mine.update"
       Pharos::Salt.orchestrate
 
       redirect_to nodes_path
