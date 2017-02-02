@@ -78,15 +78,19 @@ RSpec.describe NodesController, type: :controller do
     let(:salt) { Pharos::Salt }
     before do
       sign_in user
-      Minion.create! [{ hostname: "master" }, { hostname: "minion0" }]
+      Minion.create! [{ hostname: "ca" },
+                      { hostname: "minion0.k8s.local" },
+                      { hostname: "minion1.k8s.local" }]
+      allow(salt).to receive(:call)
+      allow(salt).to receive(:orchestrate)
     end
 
     it "calls the orchestration" do
-      allow(salt).to receive(:orchestrate)
       VCR.use_cassette("salt/bootstrap", record: :none) do
         post :bootstrap
       end
-      expect(salt).to have_received(:orchestrate)
+      expect(salt).to have_received(:call).with(action: "mine.update").ordered
+      expect(salt).to have_received(:orchestrate).ordered
     end
 
     it "gets redirected to the list of nodes" do

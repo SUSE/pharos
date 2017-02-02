@@ -31,6 +31,7 @@ class NodesController < ApplicationController
       end
       minion.assign_role(role: random_role)
     end
+    Pharos::Salt.call action: "mine.update"
     Pharos::Salt.orchestrate
     redirect_to nodes_path
   end
