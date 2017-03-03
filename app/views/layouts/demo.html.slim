@@ -1,0 +1,30 @@
+doctype html
+html.demo(lang='en')
+  head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    // The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags
+    meta(name='description', content='')
+    meta(name='author', content='')
+    link(rel='icon', href='/favicon.ico')
+    title Velum
+    = stylesheet_link_tag 'application', media: 'all'
+    = csrf_meta_tags
+
+  body class="#{yield :body_class}"
+    .container
+      header.row
+        .col-xs-12
+          .page-header
+            h2 SUSE&reg; Container as a Service Platform
+      .row
+        .col-xs-12
+          = yield
+      footer.row
+        .col-xs-12
+          p.text-center
+            span
+              'SUSE CaaSP&reg; Version 0.1 | &copy; SUSE Linux 2017
+
+    = javascript_include_tag 'application'

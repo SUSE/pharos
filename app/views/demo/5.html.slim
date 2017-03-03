@@ -1,0 +1,66 @@
+= content_for :body_class, "demo-5"
+.alert.alert-danger.alert-dismissible role="alert"
+  button.close[type="button" data-dismiss="alert" aria-label="Close"]
+    span[aria-hidden="true"]
+      | &times;
+  i.fa.fa-exclamation-triangle.fa-4x.pull-left aria-hidden="true"
+  span 
+    | At leat one node has failed to deploy. This might mean many things but really it means that you are in a pickle! Luckily you are a GREAT admin and wil fix this by hand. Please check the logs and do something about it
+    strong 
+      | “Next”
+    |  button at the top and bottom of the list.
+h1 Add Nodes
+.row
+  .col-xs-12.discovery-control
+    i.fa.fa-refresh.fa-2x.fa-fw.text-muted
+    span.text-muted 10 Nodes Found
+    a.btn.btn-default[href="#", disabled="disabled"] Pause Discovery
+.nodes-container
+  form
+    table.table
+      thead
+        tr
+          th.text-center
+            | Status
+          th
+            | Node Identifier
+          th
+            | RAM
+          th
+            | CPU
+          th
+            | Model
+          th.text-center
+            | Master
+      tbody
+        - test_nodes.each do |n|
+          tr 
+            th.text-center
+              - if n[:status] == "ready"
+                i.fa.fa-check-circle-o.text-success.fa-2x aria-hidden="true"
+              - if n[:status] == "warning"
+                i.fa.fa-times-circle.text-danger.fa-2x aria-hidden="true"
+              - if n[:status] == "info"
+                i.fa.fa-exclamation-circle.text-warning.fa-2x aria-hidden="true"
+              - if n[:status] == "installing"
+                span.fa-stack aria-hidden="true"
+                  i.fa.fa-circle.fa-stack-2x.text-success aria-hidden="true"
+                  i.fa.fa-refresh.fa-stack-1x.fa-spin.fa-inverse aria-hidden="true"
+            td
+              | #{n[:ip]}
+            td
+              | #{n[:ram]}
+            td
+              | #{n[:cpu]}
+            td
+              | #{n[:model]}
+            td.text-center
+              .radio.disabled
+                label
+                  - if n[:master]
+                    input type="radio" name="master" value="master#{n[:name]}" aria-label="Master" disabled="disabled" checked="checked"
+                  - else
+                    input type="radio" name="master" value="master#{n[:name]}" aria-label="Master" disabled="disabled"
+  .clearfix.text-right.steps-container
+    a.btn.btn-danger[href="/ui-demo/3", disabled="disabled"] Back
+    a.btn.btn-primary[href="/ui-demo/5", disabled="disabled"] Add Nodes

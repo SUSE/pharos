@@ -1,0 +1,23 @@
+= content_for :body_class, "demo-1"
+.alert.alert-info.alert-dismissible role="alert"
+  button.close[type="button" data-dismiss="alert" aria-label="Close"]
+    span[aria-hidden="true"]
+      | &times;
+  i.fa.fa-eye.fa-4x.pull-left aria-hidden="true"
+  span Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+h1 Initial CaaSP Configuration
+form
+  .form-group
+    label[for="exampleInputEmail1"] IP address
+    input#exampleInputIP1.form-control[type="text" placeholder="192.168.0.253"]
+  .form-group
+    label[for="exampleInputPort1"] Port
+    input#exampleInputPort1.form-control[type="text" placeholder="8887"]
+  .form-group
+    label[for="exampleInput2"] Configuration Option Three with a very long description
+    input#exampleInput2.form-control[type="text" placeholder="There are many variations of passages of Lorem Ipsum available, but the majority have sufferet alteration"]
+  .form-group
+    label[for="exampleInput3"] Configuration Option Three with a very long description
+    input#exampleInput3.form-control[type="text" placeholder="There are many variations of passages of Lorem Ipsum available, but the majority have sufferet alteration"]
+.clearfix.steps-container
+  a.btn.btn-primary.pull-right[href="/ui-demo/2"] Next

@@ -1,0 +1,63 @@
+= content_for :body_class, "demo-3"
+.alert.alert-info.alert-dismissible role="alert"
+  button.close[type="button" data-dismiss="alert" aria-label="Close"]
+    span[aria-hidden="true"]
+      | &times;
+  i.fa.fa-eye.fa-4x.pull-left aria-hidden="true"
+  span 
+    | As nodes come online they will be shown in the list below. Configure the desired Master and deploy the nodes by clicking on the 
+    strong 
+      | “Next”
+    |  button at the top and bottom of the list.
+h1 Add Nodes
+.row
+  .col-xs-12.discovery-control
+    i.fa.fa-refresh.fa-spin.fa-2x.fa-fw
+    span 10 Nodes Found
+    a.btn.btn-default[href="#"] Pause Discovery
+.nodes-container
+  form
+    table.table
+      thead
+        tr
+          th.text-center
+            | Status
+          th
+            | Node Identifier
+          th
+            | RAM
+          th
+            | CPU
+          th
+            | Model
+          th.text-center
+            | Master
+      tbody
+        - test_nodes.each do |n|
+          tr 
+            th.text-center
+              - if n[:status] == "ready"
+                i.fa.fa-check-circle-o.text-success.fa-2x aria-hidden="true"
+              - if n[:status] == "warning"
+                i.fa.fa-times-circle.text-danger.fa-2x aria-hidden="true"
+              - if n[:status] == "info"
+                i.fa.fa-exclamation-circle.text-warning.fa-2x aria-hidden="true"
+              - if n[:status] == "installing"
+                span.fa-stack aria-hidden="true"
+                  i.fa.fa-circle.fa-stack-2x.text-success aria-hidden="true"
+                  i.fa.fa-refresh.fa-stack-1x.fa-spin.fa-inverse aria-hidden="true"
+            td
+              | #{n[:ip]}
+            td
+              | #{n[:ram]}
+            td
+              | #{n[:cpu]}
+            td
+              | #{n[:model]}
+            td.text-center
+              .radio
+                label
+                  input type="radio" name="master" value="master#{n[:name]}" aria-label="Master"
+  .clearfix.text-right.steps-container
+    a.btn.btn-danger[href="/ui-demo/2"] Back
+    a.btn.btn-primary[href="/ui-demo/4"] Add Nodes

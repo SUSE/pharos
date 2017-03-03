@@ -1,0 +1,49 @@
+= content_for :body_class, "demo-6"
+h1 Simple Monitoring
+.row
+  .col-xs-12.discovery-control
+    a.btn.btn-primary[href="/ui-demo/3"] Add Nodes
+.nodes-container
+  form
+    table.table
+      thead
+        tr
+          th.text-center
+            | Status
+          th
+            | Node Identifier
+          th
+            | RAM
+          th
+            | CPU
+          th
+            | Model
+          th.text-center
+            | Master
+      tbody
+        - test_nodes.each do |n|
+          tr 
+            th.text-center
+              - if n[:status] == "ready"
+                i.fa.fa-check-circle-o.text-success.fa-2x aria-hidden="true"
+              - if n[:status] == "warning"
+                i.fa.fa-times-circle.text-danger.fa-2x aria-hidden="true"
+              - if n[:status] == "info"
+                i.fa.fa-exclamation-circle.text-warning.fa-2x aria-hidden="true"
+              - if n[:status] == "installing"
+                i.fa.fa-check-circle-o.text-success.fa-2x aria-hidden="true"
+            td
+              | #{n[:ip]}
+            td
+              | #{n[:ram]}
+            td
+              | #{n[:cpu]}
+            td
+              | #{n[:model]}
+            td.text-center
+              .radio.disabled
+                label
+                  - if n[:master]
+                    input type="radio" name="master" value="master#{n[:name]}" aria-label="Master" disabled="disabled" checked="checked"
+                  - else
+                    input type="radio" name="master" value="master#{n[:name]}" aria-label="Master" disabled="disabled"
