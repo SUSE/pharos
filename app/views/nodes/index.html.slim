@@ -6,7 +6,4 @@ h1
 h1
   | Nodes
 
-div id="nodes" data-url="#{nodes_path}"
-
-script
-  | MinionPoller.poll();
+div id="nodes" data-plugin='[{"name": "velumMinionPoller", "options": {"nodesUrl": "#{nodes_path}"}}]'
