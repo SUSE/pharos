@@ -1,0 +1,17 @@
+.panel.panel-default
+  .panel-heading
+    h3.panel-title Configuration
+  .panel-body
+    form
+      .form-group
+        label[for="exampleInputEmail1"] IP address
+        input#exampleInputIP1.form-control[type="text" placeholder="192.168.0.253" value="192.168.0.253"]
+      .form-group
+        label[for="exampleInputPassword1"] Port
+        input#exampleInputPort1.form-control[type="text" placeholder="8887" value="8887"]
+      .checkbox
+        label
+          input[type="checkbox" value=""] Enable Autoupdate 
+  .panel-footer.clearfix
+    a.btn.btn-default.pull-left[role="button" href="/nodes"] Back
+    a.btn.btn-primary.pull-right[role="button" href="/nodes"] Save

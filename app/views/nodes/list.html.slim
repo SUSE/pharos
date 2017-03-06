@@ -1,0 +1,53 @@
+nav.navbar.navbar-default
+  .container-fluid
+    a.btn.btn-default.navbar-btn[role="button" href="/nodes/new"]
+      i.fa.fa-plus.fa-fw[aria-hidden="true"]
+      |  Add New Nodes
+    a.btn.btn-default.navbar-btn.pull-right[role="button" href="/config"]
+      i.fa.fa-cog.fa-fw[aria-hidden="true"]
+      |  Configuration
+.panel.panel-default
+  .panel-heading
+    h3.panel-title Nodes List
+  .panel-body
+    form
+        table.table.table-striped
+          thead
+            tr
+              th
+                | Id
+              th
+                | Status
+              th
+                | Name
+              th
+                | Network
+              th
+                | IP Address
+              th
+                | Master
+          tbody
+            - test_nodes.each do |n|
+              tr 
+                th
+                  | #{n[:id]}
+                td
+                  - if n[:status] == "ready"
+                    span.glyphicon.glyphicon-ok-sign.text-success aria-hidden="true"
+                  - if n[:status] == "warning"
+                    span.glyphicon.glyphicon-remove-sign.text-danger aria-hidden="true"
+                  - if n[:status] == "info"
+                    span.glyphicon.glyphicon-exclamation-sign.text-warning aria-hidden="true"
+                td
+                  | #{n[:name]}
+                td
+                  | #{n[:network]}
+                td
+                  | #{n[:ip]}
+                td
+                  .radio.disabled
+                    label
+                      - if n[:master]
+                        input type="radio" name="master" value="master#{n[:id]}" aria-label="Master" disabled="disabled" checked="checked"
+                      - else
+                        input type="radio" name="master" value="master#{n[:id]}" aria-label="Master" disabled="disabled"

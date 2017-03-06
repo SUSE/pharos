@@ -16,6 +16,12 @@ Rails.application.routes.draw do
     root to: "auth/sessions#new"
   end
 
+  get '/installer/options', to: 'installer#options'
+  get '/installer/master', to: 'installer#master'
+  get '/nodes/new', to: 'nodes#new'
+  get '/nodes', to: 'nodes#list'
+  get '/config', to: 'config#index'
+
   resources :nodes, only: [:index, :show, :destroy] do
     collection do
       put :update

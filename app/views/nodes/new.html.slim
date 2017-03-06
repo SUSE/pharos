@@ -1,0 +1,40 @@
+.panel.panel-default
+  .panel-heading
+    h3.panel-title Add New Nodes
+  .panel-body
+    p Please, choose the nodes to be added as minions
+    form
+        table.table.table-striped
+          thead
+            tr
+              th
+                | Id
+              th
+                | Status
+              th
+                | Name
+              th
+                | Network
+              th
+                | IP Address
+              th
+                | Add
+          tbody
+            - test_nodes.each do |n|
+              tr 
+                th
+                  | #{n[:id]}
+                td
+                  span.glyphicon.glyphicon.glyphicon-question-sign.text-info[aria-hidden="true"]
+                td
+                  | #{n[:name]}
+                td
+                  | #{n[:network]}
+                td
+                  | #{n[:ip]}
+                td
+                  .checkbox
+                    label
+                      input type="checkbox" name="master" id="add-node#{n[:id]}" value="add-node#{n[:id]}" aria-label="Master"
+  .panel-footer.clearfix
+    a.btn.btn-primary.pull-right[role="button" href="/nodes"] Add

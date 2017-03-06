@@ -1,0 +1,32 @@
+.panel.panel-default
+  .panel-heading
+    h3.panel-title Master Selection
+  .panel-body
+    p In order to complete the installation process, the Master node needs to be specified
+    form
+        table.table.table-striped
+          thead
+            tr
+              th
+                | Id
+              th
+                | Name
+              th
+                | IP Address
+              th
+                | Master
+          tbody
+            - test_nodes.each do |n|
+              tr 
+                th
+                  | #{n[:id]}
+                td
+                  | #{n[:name]}
+                td
+                  | #{n[:ip]}
+                td
+                  .radio
+                    label
+                      input type="radio" name="master" value="master#{n[:name]}" aria-label="Master"
+  .panel-footer.clearfix
+    a.btn.btn-primary.pull-right[href="/nodes"] Next

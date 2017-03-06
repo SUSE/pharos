@@ -1,15 +1,6 @@
 // Vendored fonts and styles.
 @import "font-awesome";
-@import "raleway";
-@import "pacifico";
 
 // Core libraries.
-@import "bootstrap-sprockets";
-@import 'core/**/*';
+@import 'bootstrap-sprockets';
 @import 'bootstrap';
-@import 'lifeitup/lifeitup';
-
-// Velum
-@import "includes/**/*";
-@import "pages/**/*";
-@import "components/*";
