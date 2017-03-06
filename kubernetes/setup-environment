@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 log()   { echo ">>> $1" ; }
 
 until netstat -antp | grep ":::3306" &> /dev/null;

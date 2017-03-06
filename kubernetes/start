@@ -63,7 +63,7 @@ done
 
 if $(which kubelet >&/dev/null); then
   log "Running setup-environment script"
-  bash setup-environment &
+  ./setup-environment
 else
   log "To launch kubelet make sure to install kubernetes-node package first and run this script again..."
   exit 1
