@@ -1,20 +1,17 @@
 #!/bin/bash
 
-# This script will ensure Portus' database is ready to be used. It will keep
-# waiting for the db to be usable, but the script will exit with an error
-# after a certain amount of failed attempts.
-#
-# The script will automatically import all the SSL certificates from
-# `/certificates` into the final system. This is needed to talk with the
-# registry API when this one is protected by TLS.
-#
-# Finally the script will start apache running Portus via mod_rails.
+# This script will setup the database and then start the rails application
 
 set -e
 # check that BUNDLER_BIN is set
 if [ ! -z $BUNDLER_BIN ]; then
-    echo "BUNDLER_BIN var is not set. Please set that and try again" >&2
+    echo "ERROR: BUNDLER_BIN var is not set. Please set that and try again" >&2
     exit -1
+fi
+
+if [ ! -z $PORT ];then
+    echo "WARNING: PORT var not set. Setting to 80" >&2
+    PORT=80
 fi
 
 setup_database() {
@@ -60,4 +57,4 @@ setup_database() {
 cd /srv/velum
 setup_database
 $BUNDLER_BIN exec rake db:migrate
-$BUNDLER_BIN exec "rails s -b 0.0.0.0 -p 3000 Puma"
+$BUNDLER_BIN exec "rails s -b 0.0.0.0 -p $PORT Puma"

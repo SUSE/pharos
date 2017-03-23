@@ -1,4 +1,4 @@
-# This is a rails runner that will print the status of Portus' database
+# This is a rails runner that will print the status of the database
 # Possible outcomes:
 #
 #   * `DB_READY`: the database has been created and initialized
