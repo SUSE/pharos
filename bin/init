@@ -12,7 +12,7 @@ setup_database() {
   RETRY=1
 
   while [ $RETRY -ne 0 ]; do
-    case $(bundle exec rails r /check_db.rb | grep DB) in
+    case $(bundle exec rails r bin/check_db.rb | grep DB) in
       "DB_DOWN")
         if [ "$COUNT" -ge "$TIMEOUT" ]; then
           printf " [FAIL]\n"
@@ -42,7 +42,6 @@ setup_database() {
   set -e
 }
 
-cd /srv/velum
 setup_database
 bundle exec rake db:migrate
 bundle exec "rails s -b 0.0.0.0 -p 80 Puma"
