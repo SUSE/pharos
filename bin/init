@@ -3,16 +3,6 @@
 # This script will setup the database and then start the rails application
 
 set -e
-# check that BUNDLER_BIN is set
-if [ ! -z $BUNDLER_BIN ]; then
-    echo "ERROR: BUNDLER_BIN var is not set. Please set that and try again" >&2
-    exit -1
-fi
-
-if [ ! -z $PORT ];then
-    echo "WARNING: PORT var not set. Setting to 80" >&2
-    PORT=80
-fi
 
 setup_database() {
   set +e
@@ -24,7 +14,7 @@ setup_database() {
   export SKIP_MIGRATION=1
 
   while [ $RETRY -ne 0 ]; do
-    case $(SKIP_MIGRATION=1 $BUNDLER_BIN exec rails r /check_db.rb | grep DB) in
+    case $(SKIP_MIGRATION=1 bundle exec rails r /check_db.rb | grep DB) in
       "DB_DOWN")
         if [ "$COUNT" -ge "$TIMEOUT" ]; then
           printf " [FAIL]\n"
@@ -38,8 +28,8 @@ setup_database() {
       "DB_EMPTY"|"DB_MISSING")
         # create db, apply schema and seed
         echo "Initializing database"
-        SKIP_MIGRATION=1 $BUNDLER_BIN exec rake db:create
-        SKIP_MIGRATION=1 $BUNDLER_BIN exec rake db:schema:load
+        SKIP_MIGRATION=1 bundle exec rake db:create
+        SKIP_MIGRATION=1 bundle exec rake db:schema:load
         if [ $? -ne 0 ]; then
             echo "Error at setup time"
             exit 1
@@ -56,5 +46,5 @@ setup_database() {
 
 cd /srv/velum
 setup_database
-$BUNDLER_BIN exec rake db:migrate
-$BUNDLER_BIN exec "rails s -b 0.0.0.0 -p $PORT Puma"
+bundle exec rake db:migrate
+bundle exec "rails s -b 0.0.0.0 -p 80 Puma"
