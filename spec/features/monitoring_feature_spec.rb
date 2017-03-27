@@ -10,6 +10,15 @@ feature "Monitoring feature" do
     visit authenticated_root_path
   end
 
+  scenario "It works if there are no minions", js: true do
+    Minion.destroy_all
+    visit authenticated_root_path
+
+    using_wait_time 10 do
+      expect(page).not_to have_content("minion0.k8s.local")
+    end
+  end
+
   scenario "It updates the status of the minions automatically", js: true do
     # We poll every 5 seconds so the default Capybara wait time might not be enough
     using_wait_time 10 do

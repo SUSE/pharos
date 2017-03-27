@@ -28,14 +28,13 @@ MinionPoller = {
         }
         $(".nodes-container tbody").html(rendered);
 
-        var unassignedMinions = data.unassigned_minions;
+        var unassigned = data.unassigned_minions;
 
-        if (unassignedMinions.length > 0) {
-          $('#unassigned_count').html(unassignedMinions.length + " \
-            <strong>new</strong> nodes are available but have not been added to the cluster yet"
-          );
-        } else {
+        if (!unassigned || unassigned.length === 0) {
           $('#unassigned_count').html('');
+        } else {
+          $('#unassigned_count').html(data.unassigned_minions.length + " \
+            <strong>new</strong> nodes are available but have not been added to the cluster yet");
         }
       }
     });
