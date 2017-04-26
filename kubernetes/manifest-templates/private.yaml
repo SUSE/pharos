@@ -10,6 +10,24 @@ spec:
   - name: velum-mariadb
     imagePullPolicy: Always
     image: library/mariadb:10.0.29
+    readinessProbe:
+      exec:
+        command:
+          - mysqladmin
+          - --socket
+          - /var/run/mysqld/mysqld.sock
+          - ping
+      initialDelaySeconds: 30
+      timeoutSeconds: 2
+    livenessProbe:
+      exec:
+        command:
+          - mysqladmin
+          - --socket
+          - /var/run/mysqld/mysqld.sock
+          - ping
+      initialDelaySeconds: 30
+      timeoutSeconds: 2
     env:
     - name: MYSQL_ROOT_PASSWORD
       value: "salt"
