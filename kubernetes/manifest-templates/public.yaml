@@ -69,6 +69,14 @@ spec:
         name: mariadb-unix-socket
     command: ["/bin/sh","-c"]
     args: ["bin/init"]
+    command: ['sh', '-c', 'echo']
+  initContainers:
+  - name: init-mariadb
+    image: codeflavor/nspawn-toolbox:latest
+    command: ['mysqladmin', '-s', '/var/run/mysqld/mysqld.sock', 'ping']
+    volumeMounts:
+      - mountPath: /var/run/mysqld
+        name: mariadb-unix-socket
   - name: salt-api
     image: opensuse/salt-api:boron
     imagePullPolicy: Always
