@@ -65,11 +65,9 @@ pushd build/$packagename-$branch/
           patch -p1 < $p || exit -1
       done
   fi
-  echo "generate the Gemfile.lock for packaging"
   export BUNDLE_GEMFILE=$PWD/Gemfile
-  cp Gemfile.lock Gemfile.lock.orig
   bundle config build.nokogiri --use-system-libraries
-  PACKAGING=yes bundle install --retry=3 --no-deployment
+  bundle install --retry=3 --no-deployment
   grep "git-review" Gemfile.lock
   if [ $? == 0 ];then
     echo "DEBUG: ohoh something went wrong and you have devel packages"
