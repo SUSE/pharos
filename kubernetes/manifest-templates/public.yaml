@@ -16,7 +16,7 @@ spec:
     - name: MARIADB_SOCKET
       value: /var/run/mysqld/mysqld.sock
     command: ["sh", "-c"]
-    args: ["until mysqladmin -p\"${MYSQL_ROOT_PASSWORD}\" -S \"${MARIADB_SOCKET}\" ping; do echo 'Database not online yet, waiting...' && sleep 3; done"]
+    args: ["ls && until mysqladmin -p\"${MYSQL_ROOT_PASSWORD}\" -S \"${MARIADB_SOCKET}\" ping; do echo 'Database not online yet, waiting...' && sleep 3; done"]
     volumeMounts:
       - mountPath: /var/run/mysqld
         name: mariadb-unix-socket
