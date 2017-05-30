@@ -9,7 +9,9 @@
         <interpreter>shell</interpreter>
         <source><![CDATA[
         #!/bin/sh
-        echo "master: <%= @controller_node %>" > /etc/salt/minion.d/master.conf
+        MINION_CFG="/etc/salt/minion.d/master.conf"
+        echo "id: <%= SecureRandom.hex %>" > $MINION_CFG
+        echo "master: <%= @controller_node %>" >> $MINION_CFG
         ]]>
         </source>
       </script>
