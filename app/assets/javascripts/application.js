@@ -13,4 +13,6 @@
 //= require jquery
 //= require jquery_ujs
 //= require bootstrap.min
-//= require_tree .
+//= require_tree ./utils
+//= require_tree ./services
+//= require_tree ./views
