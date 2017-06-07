@@ -3,6 +3,7 @@ $LOAD_PATH.unshift File.dirname(__FILE__)
 require "util"
 require "yaml"
 require "fileutils"
+require 'json'
 
 if ARGV.count != 3
   puts "usage: #{$PROGRAM_NAME} container-manifests-dir velum-source-code-dir salt-dir"
@@ -21,6 +22,23 @@ def container_volume(name:, path:)
     "name"      => volume_name(name: name),
     "mountPath" => path
   }
+end
+
+def patch_annotation_image(annotation)
+  # array of keys to process - makes it easy to add more later
+  keys = ['pod.beta.kubernetes.io/init-containers']
+
+  keys.each do |k|
+    if annotation.has_key? k
+      init_cont_array = YAML.safe_load annotation[k]
+
+      init_cont_array.each do |container|
+        patch_container container
+      end
+
+      annotation[k] = init_cont_array.to_json
+    end
+  end
 end
 
 def patch_container_image(container)
@@ -70,12 +88,20 @@ def patch_container_volumes(container)
     end
 end
 
+def patch_container(container)
+  patch_container_image container
+  patch_container_envvars container
+  patch_container_volumes container
+end
+
 def patch_containers(yaml)
   yaml["spec"]["containers"].each do |container|
-    patch_container_image container
-    patch_container_envvars container
-    patch_container_volumes container
+    patch_container container
   end
+end
+
+def patch_annotations(yaml)
+  patch_annotation_image yaml['metadata']['annotations'] || {}
 end
 
 def volume_name(name:)
@@ -143,5 +169,6 @@ yaml = YAML.safe_load STDIN
 
 patch_containers yaml
 patch_host_volumes yaml
+patch_annotations yaml
 
 puts yaml.to_yaml
