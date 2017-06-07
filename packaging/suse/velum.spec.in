@@ -56,6 +56,7 @@ __RUBYGEMS_BUILD_REQUIRES__
 
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+BuildArch:      noarch
 
 %description
 velum is the dashboard for CaasP to manage and deploy kubernetes clusters on top of MicroOS
