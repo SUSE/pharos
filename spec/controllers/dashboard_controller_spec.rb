@@ -3,14 +3,6 @@ require "rails_helper"
 
 require "velum/suse_connect"
 
-def setup_stubbed_update_status!
-  stubbed = [
-    [{ "admin" => "", master_minion.minion_id => true, worker_minion.minion_id => true }],
-    [{ "admin" => true, master_minion.minion_id => true, worker_minion.minion_id => "" }],
-  ]
-  allow(::Velum::Salt).to receive(:update_status).and_return(stubbed)
-end
-
 RSpec.describe DashboardController, type: :controller do
   let(:user)                 { create(:user) }
   let(:minion1)              { create(:minion) }
@@ -18,6 +10,13 @@ RSpec.describe DashboardController, type: :controller do
   let(:master_minion)        { create(:master_minion) }
   let(:worker_minion)        { create(:worker_minion) }
   let(:external_fqdn_pillar) { create(:external_fqdn_pillar) }
+  let(:stubbed) do
+    [
+      [{ "admin" => "",   master_minion.minion_id => true, worker_minion.minion_id => true }],
+      [{ "admin" => true, master_minion.minion_id => true, worker_minion.minion_id => ""   }]
+    ]
+  end
+
 
   before do
     minion1 && minion2 # Create two minions (no roles assigned)
@@ -44,7 +43,7 @@ RSpec.describe DashboardController, type: :controller do
     end
 
     it "shows a simple monitoring when roles have already been assigned" do
-      setup_stubbed_update_status!
+      setup_stubbed_update_status!(stubbed: stubbed)
 
       sign_in user
       # Create a master minion and a worker minion
@@ -61,7 +60,7 @@ RSpec.describe DashboardController, type: :controller do
       master_minion && worker_minion
       request.accept = "application/json"
 
-      setup_stubbed_update_status!
+      setup_stubbed_update_status!(stubbed: stubbed)
     end
 
     it "renders assigned and unassigned minions" do
