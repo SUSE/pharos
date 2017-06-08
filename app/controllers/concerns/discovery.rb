@@ -13,18 +13,19 @@ module Discovery
     respond_to do |format|
       format.html
       format.json do
-        render json: {
-                 assigned_minions:   @assigned_minions,
-                 unassigned_minions: @unassigned_minions,
-                 admin:              admin_status
-               }, methods: [:update_status]
+        hsh = {
+          assigned_minions:   @assigned_minions,
+          unassigned_minions: @unassigned_minions,
+          admin:              admin_status
+        }
+        render json: hsh, methods: [:update_status]
       end
     end
   end
 
   protected
 
-  # TODO (mssola):
+  # TODO(mssola):
   #  1. It would make more sense to have the update status on the DB and have
   #     another process polling for this. Then, on the `discovery` method this
   #     would all be returned transparently (thus removing all the methods below).

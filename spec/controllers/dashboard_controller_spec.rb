@@ -17,7 +17,6 @@ RSpec.describe DashboardController, type: :controller do
     ]
   end
 
-
   before do
     minion1 && minion2 # Create two minions (no roles assigned)
     # rubocop:disable RSpec/AnyInstance
@@ -71,10 +70,12 @@ RSpec.describe DashboardController, type: :controller do
       end
     end
 
+    # rubocop:disable RSpec/ExampleLength
+    # rubocop:disable RSpec/MultipleExpectations
     it "sets the update_status properly" do
       stubbed = [
         [{ "admin" => "", master_minion.minion_id => true, worker_minion.minion_id => true }],
-        [{ "admin" => true, master_minion.minion_id => true, worker_minion.minion_id => "" }],
+        [{ "admin" => true, master_minion.minion_id => true, worker_minion.minion_id => "" }]
       ]
       allow(::Velum::Salt).to receive(:update_status).and_return(stubbed)
 
@@ -87,6 +88,8 @@ RSpec.describe DashboardController, type: :controller do
       expect(master["update_status"]).to eq(Minion.statuses[:update_failed])
       expect(worker["update_status"]).to eq(Minion.statuses[:update_needed])
     end
+    # rubocop:enable RSpec/ExampleLength
+    # rubocop:enable RSpec/MultipleExpectations
   end
 
   describe "GET /autoyast" do
