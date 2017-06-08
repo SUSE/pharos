@@ -17,6 +17,9 @@ class Minion < ApplicationRecord
   validates :minion_id, presence: true, uniqueness: true
   validates :fqdn, presence: true
 
+  # NOTE: this should be moved into a proper DB column as we do for highstates.
+  attr_accessor :update_status
+
   # Example:
   #   Minion.assign_roles(
   #     roles: {
