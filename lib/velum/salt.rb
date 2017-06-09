@@ -20,6 +20,13 @@ module Velum
       [res, JSON.parse(res.body)]
     end
 
+    # Returns the update status of the different minions.
+    def self.update_status(targets: "*")
+      _, needed = Salt.call(action: "grains.get", arg: "tx_update_reboot_needed", targets: targets)
+      _, failed = Salt.call(action: "grains.get", arg: "tx_update_failed", targets: targets)
+      [needed["return"], failed["return"]]
+    end
+
     # Returns the minions as discovered by salt.
     def self.minions
       res = perform_request(endpoint: "/minions", method: "get")
@@ -32,6 +39,15 @@ module Velum
                             data: { client: "runner_async",
                                     fun:    "state.orchestrate",
                                     mods:   "orch.kubernetes" })
+      [res, JSON.parse(res.body)]
+    end
+
+    # Call the update orchestration.
+    def self.update
+      res = perform_request(endpoint: "/run", method: "post",
+                            data: { client: "runner_async",
+                                    fun:    "state.orchestrate",
+                                    mods:   "orch.update" })
       [res, JSON.parse(res.body)]
     end
 

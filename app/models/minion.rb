@@ -12,9 +12,13 @@ class Minion < ApplicationRecord
 
   enum highstate: [:not_applied, :pending, :failed, :applied]
   enum role: [:master, :worker]
+  enum status: [:unknown, :update_needed, :update_failed]
 
   validates :minion_id, presence: true, uniqueness: true
   validates :fqdn, presence: true
+
+  # NOTE: this should be moved into a proper DB column as we do for highstates.
+  attr_accessor :update_status
 
   # Example:
   #   Minion.assign_roles(
