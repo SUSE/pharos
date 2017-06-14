@@ -24,10 +24,9 @@ feature "Login feature" do
   end
 
   scenario "Wrong password results in an error message" do
-    pending("fix the validations")
     fill_in "user_email", with: "foo"
     fill_in "user_password", with: "bar"
-    find("input[type=submit]").click
+    click_button("Log in")
 
     expect(page).to have_content("Invalid Email or password")
   end
