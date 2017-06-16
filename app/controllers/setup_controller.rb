@@ -7,6 +7,9 @@ require "velum/salt"
 # welcoming, setting certain general settings, master selection, discovery and
 # bootstrapping
 class SetupController < ApplicationController
+  MINIMUM_MASTER_NODES = 1
+  MINIMUM_WORKER_NODES = 2
+
   include Discovery
 
   rescue_from Minion::NonExistingNode, with: :node_not_found
@@ -15,6 +18,7 @@ class SetupController < ApplicationController
   before_action :redirect_to_dashboard
   before_action :check_empty_settings, only: :configure
   before_action :check_empty_bootstrap, only: :bootstrap
+  before_action :check_minimum_nodes_bootstrap, only: :bootstrap
 
   def configure
     res = Pillar.apply(settings_params)
@@ -38,7 +42,7 @@ class SetupController < ApplicationController
   end
 
   def bootstrap
-    assigned = Minion.assign_roles!(roles: update_nodes_params)
+    assigned = Minion.assign_roles!(roles: roles_params)
 
     respond_to do |format|
       if assigned.values.include?(false)
@@ -66,8 +70,10 @@ class SetupController < ApplicationController
     params.require(:settings).permit(*Pillar.all_pillars.keys)
   end
 
-  def update_nodes_params
-    params.require(:roles)
+  def roles_params
+    roles_params = params.require(:roles)
+    roles_params[:worker] = (roles_params[:worker] || []) - roles_params[:master]
+    roles_params
   end
 
   def failed_assigned_nodes(assigned)
@@ -104,6 +110,19 @@ class SetupController < ApplicationController
       format.html do
         redirect_to setup_discovery_path, alert: msg
       end
+      format.json { render json: msg, status: :unprocessable_entity }
+    end
+  end
+
+  # Enforce at least 1 master and 2 workers, otherwise will reject
+  # e.g.: { master: [1], worker: [2, 3] }
+  def check_minimum_nodes_bootstrap
+    return if roles_params[:master].length >= MINIMUM_MASTER_NODES &&
+        roles_params[:worker].length >= MINIMUM_WORKER_NODES
+
+    respond_to do |format|
+      msg = "Please select a master and at least two workers"
+      format.html { redirect_to setup_discovery_path, alert: msg }
       format.json { render json: msg, status: :unprocessable_entity }
     end
   end

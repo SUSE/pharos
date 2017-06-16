@@ -46,12 +46,13 @@ RSpec.describe SetupController, type: :controller do
     before do
       sign_in user
       Minion.create! [{ minion_id: SecureRandom.hex, fqdn: "master" },
-                      { minion_id: SecureRandom.hex, fqdn: "worker0" }]
+                      { minion_id: SecureRandom.hex, fqdn: "worker0" },
+                      { minion_id: SecureRandom.hex, fqdn: "worker1" }]
     end
 
     context "when the minion doesn't exist" do
       it "renders an error with not_found" do
-        post :bootstrap, roles: { master: [9999999] }
+        post :bootstrap, roles: { master: [9999999], worker: [888, 999] }
         expect(flash[:error]).to be_present
         expect(response.redirect_url).to eq "http://test.host/setup"
       end
@@ -120,6 +121,27 @@ RSpec.describe SetupController, type: :controller do
         expect(response.redirect_url).to eq "http://test.host/setup/discovery"
       end
     end
+
+    context "when the user fails to choose minimum number of nodes (1 master, 2 workers)" do
+      before do
+        [:worker, :master].each do |role|
+          allow_any_instance_of(Velum::SaltMinion).to receive(:assign_role).with(role)
+            .and_return(role)
+        end
+        allow(salt).to receive(:orchestrate)
+      end
+
+      it "gets redirected to the discovery page" do
+        post :bootstrap, roles: { master: [Minion.first.id], worker: [Minion.last.id] }
+        expect(flash[:alert]).to be_present
+        expect(response.redirect_url).to eq "http://test.host/setup/discovery"
+      end
+
+      it "doesn't call the orchestration" do
+        post :bootstrap, roles: { master: [Minion.first.id], worker: [Minion.last.id] }
+        expect(Velum::Salt).to have_received(:orchestrate).exactly(0).times
+      end
+    end
   end
 
   describe "POST /setup/bootstrap via JSON" do
@@ -127,13 +149,14 @@ RSpec.describe SetupController, type: :controller do
     before do
       sign_in user
       Minion.create! [{ minion_id: SecureRandom.hex, fqdn: "master" },
-                      { minion_id: SecureRandom.hex, fqdn: "worker0" }]
+                      { minion_id: SecureRandom.hex, fqdn: "worker0" },
+                      { minion_id: SecureRandom.hex, fqdn: "worker1" }]
       request.accept = "application/json"
     end
 
     context "when the minion doesn't exist" do
       it "renders an error with not_found" do
-        post :bootstrap, roles: { master: [9999999] }
+        post :bootstrap, roles: { master: [9999999], worker: [999, 888] }
         expect(response).to have_http_status(:not_found)
       end
     end
@@ -191,6 +214,26 @@ RSpec.describe SetupController, type: :controller do
       it "warns and redirects to the setup_discovery_path" do
         put :bootstrap, settings: {}
         expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "when the user fails to choose minimum number of nodes (1 master, 2 workers)" do
+      before do
+        [:worker, :master].each do |role|
+          allow_any_instance_of(Velum::SaltMinion).to receive(:assign_role).with(role)
+            .and_return(role)
+        end
+        allow(salt).to receive(:orchestrate)
+      end
+
+      it "returns unprocessable entity" do
+        post :bootstrap, roles: { master: [Minion.first.id], worker: [Minion.last.id] }
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+
+      it "doesn't call the orchestration" do
+        post :bootstrap, roles: { master: [Minion.first.id], worker: [Minion.last.id] }
+        expect(Velum::Salt).to have_received(:orchestrate).exactly(0).times
       end
     end
   end
