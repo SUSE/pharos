@@ -5,6 +5,7 @@ Rails.application.routes.draw do
 
   resource :dashboard, only: [:index]
   resource :updates, only: [:create]
+  resources :nodes, only: [:destroy]
 
   authenticated :user do
     root "dashboard#index", as: :authenticated_root

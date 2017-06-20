@@ -148,6 +148,7 @@ MinionPoller = {
     var statusHtml;
     var checked;
     var masterHtml;
+    var destroyHtml;
 
     switch(minion.highstate) {
       case "not_applied":
@@ -184,7 +185,7 @@ MinionPoller = {
         switch (minion.highstate) {
           case "applied":
             statusHtml = '<i class="fa fa-arrow-circle-up text-info fa-2x" aria-hidden="true"></i>';
-            statusText = 'Update Available'  
+            statusText = 'Update Available'
             break;
           case "failed":
             statusHtml = '<i class="fa fa-arrow-circle-up text-warning fa-2x" aria-hidden="true"></i>';
@@ -201,6 +202,8 @@ MinionPoller = {
         break;
     }
 
+    destroyHtml = "<a class='btn btn-xs btn-default pull-right remove-node-btn' rel='nofollow' href='/nodes/" + minion.id + "' title='Remove node from the cluster'>Remove</a>"
+
     return "\
       <tr> \
         <td>" + statusHtml +  "</td>\
@@ -209,6 +212,7 @@ MinionPoller = {
         <td>" + minion.fqdn +  "</td>\
         <td>" + (minion.role || '') +  "</td>\
         <td class='text-center'>" + masterHtml + "</td>\
+        <td class='remove-node'>" + destroyHtml + "</td>\
       </tr>";
   },
 
@@ -232,6 +236,22 @@ MinionPoller = {
       </tr>";
   }
 };
+
+$('body').on('click', '.remove-node-btn', function(e) {
+  var $btn = $(this);
+  e.preventDefault();
+
+  $.ajax({
+    url: $btn.attr('href'),
+    method: 'DELETE'
+  })
+  .done(function() {
+    console.log("YAY!");
+  })
+  .fail(function() {
+    console.log("OOPS!");
+  });
+});
 
 // reboot to update admin node handler
 $('body').on('click', '.reboot-update-btn', function(e) {
