@@ -4,16 +4,16 @@
       | &times;
   i.fa.fa-4x.pull-left aria-hidden="true"
   span
-    | After choosing the master and clicking "Bootstrap cluster" all the other selected nodes will be set to the worker role
+    | After choosing the nodes and clicking "Add nodes" all the selected nodes will be set to the worker role
 
-h1 Nodes
+h1 Unassigned Nodes
 
 .row
   .col-xs-12.discovery-control
-    span#node-count #{Minion.count} Nodes found
+    p#node-count #{@unassigned_minions.count} nodes found
 
-= form_tag(setup_bootstrap_path, method: "post")
-  .nodes-container data-url=setup_discovery_path
+= form_tag(assign_nodes_url, method: "post")
+  .nodes-container.new-nodes-container data-url=authenticated_root_path
     table.table
       thead
         tr
@@ -23,10 +23,8 @@ h1 Nodes
             | Id
           th
             | Hostname
-          th.text-center
-            | Master
       tbody
-        - Minion.all.each do |m|
+        - @unassigned_minions.each do |m|
           tr
             td
               = check_box_tag "roles[worker][]", m.id
@@ -34,11 +32,14 @@ h1 Nodes
               | #{m.minion_id}
             td
               | #{m.fqdn}
-            td.text-center
-              = radio_button_tag "roles[master][]", m.id
 
     .clearfix.text-right.steps-container
-      = link_to "Back", setup_worker_bootstrap_path, class: "btn btn-danger"
-      = submit_tag "Bootstrap cluster", id: "bootstrap", class: "btn btn-primary"
+      = link_to "Back", authenticated_root_path, class: "btn btn-default"
+      | &nbsp;
+      = submit_tag "Add nodes", class: "btn btn-primary add-nodes-btn", disabled: true
 
-= render "setup/polling"
+= content_for :page_javascript do
+  javascript:
+    MinionPoller.renderMode = "Unassigned";
+    MinionPoller.poll();
+
