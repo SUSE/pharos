@@ -86,8 +86,8 @@ class SetupController < ApplicationController
   end
 
   def check_empty_settings
-    params = settings_params.except(:http_proxy, :https_proxy, :no_proxy)
-    return unless params.values.any?(&:empty?)
+    parameters = settings_params.except(:http_proxy, :https_proxy, :no_proxy)
+    return unless parameters.values.any?(&:empty?)
 
     respond_to do |format|
       msg = "Please fill out all necessary form fields"
