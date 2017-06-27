@@ -86,8 +86,7 @@ class SetupController < ApplicationController
   end
 
   def check_empty_settings
-    parameters = settings_params.except(:http_proxy, :https_proxy, :no_proxy)
-    return unless parameters.values.any?(&:empty?)
+    return if valid_settings?
 
     respond_to do |format|
       msg = "Please fill out all necessary form fields"
@@ -107,5 +106,10 @@ class SetupController < ApplicationController
       end
       format.json { render json: msg, status: :unprocessable_entity }
     end
+  end
+
+  def valid_settings?
+    required_pillars = (Pillar.all_pillars.keys - Pillar::OPTIONAL_PILLARS).map(&:to_s)
+    (required_pillars - settings_params.keys).empty?
   end
 end
