@@ -132,7 +132,7 @@ MinionPoller = {
       }
     }).always(function() {
       // make another request only after the last one finished
-      setTimeout(MinionPoller.request, 5000);
+      setTimeout(MinionPoller.request, 30000);
     });
   },
 
