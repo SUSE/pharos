@@ -37,6 +37,8 @@ class Pillar < ApplicationRecord
 
   scope :global, -> { where minion_id: nil }
 
+  OPTIONAL_PILLARS = [:http_proxy, :https_proxy, :no_proxy].freeze
+
   class << self
     def value(pillar:)
       Pillar.find_by(pillar: all_pillars[pillar]).try(:value)
@@ -65,7 +67,7 @@ class Pillar < ApplicationRecord
 
       Pillar.all_pillars.each do |key, pillar_key|
         # The following pillar keys can be blank, so ignore them if they are.
-        next if [:http_proxy, :https_proxy, :no_proxy].include?(key) && pillars[key].blank?
+        next if OPTIONAL_PILLARS.include?(key) && pillars[key].blank?
 
         pillar = Pillar.find_or_initialize_by pillar: pillar_key
         pillar.value = pillars[key]

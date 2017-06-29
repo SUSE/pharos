@@ -5,6 +5,18 @@ require "rails_helper"
 RSpec.describe SetupController, type: :controller do
   let(:user)   { create(:user)   }
   let(:minion) { create(:minion) }
+  let(:settings_params) do
+    {
+      company_name: "SUSE Linux GmbH",
+      company_unit: "Research and development",
+      email:        "containers@suse.de",
+      country:      "DE",
+      state:        "Bavaria",
+      city:         "Nuremberg",
+      dashboard:    "testhost.caasp.com",
+      apiserver:    "apiserver.caasp.com"
+    }
+  end
 
   before do
     setup_stubbed_pending_minions!
@@ -200,17 +212,6 @@ RSpec.describe SetupController, type: :controller do
   end
 
   describe "PUT /setup via HTML" do
-    let(:settings_params) do
-      {
-        company_name: "SUSE Linux GmbH",
-        company_unit: "Research and development",
-        email:        "containers@suse.de",
-        country:      "DE",
-        state:        "Bavaria",
-        city:         "Nuremberg"
-      }
-    end
-
     context "when the user configures the cluster successfully" do
       before do
         sign_in user
@@ -248,20 +249,21 @@ RSpec.describe SetupController, type: :controller do
         expect(response.redirect_url).to eq "http://test.host/setup"
       end
     end
+
+    context "when the user doesn't specify some values" do
+      before do
+        sign_in user
+      end
+
+      it "returns unprocessable entity" do
+        put :configure, settings: settings_params.merge(apiserver: "")
+        expect(flash[:alert]).to be_present
+        expect(response.redirect_url).to eq "http://test.host/setup"
+      end
+    end
   end
 
   describe "PUT /setup via JSON" do
-    let(:settings_params) do
-      {
-        company_name: "SUSE Linux GmbH",
-        company_unit: "Research and development",
-        email:        "containers@suse.de",
-        country:      "DE",
-        state:        "Bavaria",
-        city:         "Nuremberg"
-      }
-    end
-
     context "when the user configures the cluster successfully" do
       before do
         sign_in user
@@ -296,6 +298,18 @@ RSpec.describe SetupController, type: :controller do
 
       it "returns unprocessable entity" do
         put :configure, settings: settings_params.each { |k, _v| settings_params[k] = "" }
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context "when the user doesn't specify some values" do
+      before do
+        sign_in user
+        request.accept = "application/json"
+      end
+
+      it "returns unprocessable entity" do
+        put :configure, settings: settings_params.merge(apiserver: "")
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
