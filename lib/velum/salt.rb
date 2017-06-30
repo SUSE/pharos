@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require "velum/cache"
 require "velum/salt_api"
 
 module Velum
@@ -22,14 +23,14 @@ module Velum
 
     # Returns the update status of the different minions.
     def self.update_status(targets: "*", cached: false)
-      expiration = cached ? 1.second : 30.seconds
-
-      needed = Rails.cache.fetch("update_status", expires_in: expiration) do
-        _, res = Salt.call(action: "grains.get", arg: "tx_update_reboot_needed", targets: targets)
+      needed = Velum::Cache.fetch(key: "update_status", use_cache: cached,
+                                  expires_in: 30.seconds) do
+        _, res = Salt.call action: "grains.get", arg: "tx_update_reboot_needed", targets: targets
         res
       end
-      failed = Rails.cache.fetch("update_status_failed", expires_in: expiration) do
-        _, res = Salt.call(action: "grains.get", arg: "tx_update_failed", targets: targets)
+      failed = Velum::Cache.fetch(key: "update_status_failed", use_cache: cached,
+                                  expires_in: 30.seconds) do
+        _, res = Salt.call action: "grains.get", arg: "tx_update_failed", targets: targets
         res
       end
       [needed["return"], failed["return"]]
