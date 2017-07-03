@@ -53,5 +53,13 @@ describe Velum::Salt do
         expect(needed.first["admin"] && failed.first["admin"]).to be_truthy
       end
     end
+    it "returns the cached update status of the given nodes" do
+      VCR.use_cassette("salt/update_status", record: :none) do
+        needed, failed = described_class.update_status cached: true
+        # In the VCR both values were set to true, so we can check this in a
+        # single 'expect' statement.
+        expect(needed.first["admin"] && failed.first["admin"]).to be_truthy
+      end
+    end
   end
 end
