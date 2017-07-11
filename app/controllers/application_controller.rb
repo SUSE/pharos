@@ -2,9 +2,9 @@
 
 # ApplicationController is the superclass of all controllers.
 class ApplicationController < ActionController::Base
-  before_action :redirect_to_secure
-  before_action :authenticate_user!
-  before_action :redirect_to_setup
+  prepend_before_action :redirect_to_secure
+  prepend_before_action :authenticate_user!
+  prepend_before_action :redirect_to_setup
   protect_from_forgery with: :exception
 
   private
