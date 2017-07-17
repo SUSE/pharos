@@ -108,68 +108,58 @@ describe SaltEvent do
       expect(salt_event.handler).to be_an_instance_of(SaltHandler::MinionHighstate)
     end
 
-    # rubocop:disable RSpec/ExampleLength
-    it "must return an instance of SaltHandler::MinionOrchestration when mods is not provided"\
-      " for orch.kubernetes" do
-      salt_event = described_class.new(
-        tag:  "salt/run/12345/ret",
-        data: { fun: "runner.state.orchestrate", fun_args: ["orch.kubernetes"] }.to_json
-      )
+    context "when mods is not provided as an orchestration parameter" do
+      it "must return an instance of SaltHandler::MinionOrchestration for orch.kubernetes" do
+        salt_event = described_class.new(
+          tag:  "salt/run/12345/ret",
+          data: { fun: "runner.state.orchestrate", fun_args: ["orch.kubernetes"] }.to_json
+        )
 
-      expect(salt_event.handler).to be_an_instance_of(SaltHandler::MinionOrchestration)
+        expect(salt_event.handler).to be_an_instance_of(SaltHandler::MinionOrchestration)
+      end
+
+      it "must return an instance of SaltHandler::MinionOrchestration for orch.update" do
+        salt_event = described_class.new(
+          tag:  "salt/run/12345/ret",
+          data: { fun: "runner.state.orchestrate", fun_args: ["orch.update"] }.to_json
+        )
+
+        expect(salt_event.handler).to be_an_instance_of(SaltHandler::MinionOrchestration)
+      end
     end
-    # rubocop:enable RSpec/ExampleLength
 
-    # rubocop:disable RSpec/ExampleLength
-    it "must return an instance of SaltHandler::MinionOrchestration when mods is provided"\
-      " for orch.kubernetes" do
-      salt_event = described_class.new(
-        tag:  "salt/run/12345/ret",
-        data: { fun: "runner.state.orchestrate", fun_args: [{ mods: "orch.kubernetes" }] }.to_json
-      )
+    context "when mods is provided as an orchestration parameter" do
+      it "must return an instance of SaltHandler::MinionOrchestration for orch.kubernetes" do
+        salt_event = described_class.new(
+          tag:  "salt/run/12345/ret",
+          data: { fun: "runner.state.orchestrate", fun_args: [{ mods: "orch.kubernetes" }] }.to_json
+        )
 
-      expect(salt_event.handler).to be_an_instance_of(SaltHandler::MinionOrchestration)
+        expect(salt_event.handler).to be_an_instance_of(SaltHandler::MinionOrchestration)
+      end
+
+      it "must return an instance of SaltHandler::MinionOrchestration for orch.update" do
+        salt_event = described_class.new(
+          tag:  "salt/run/12345/ret",
+          data: { fun: "runner.state.orchestrate", fun_args: [{ mods: "orch.update" }] }.to_json
+        )
+
+        expect(salt_event.handler).to be_an_instance_of(SaltHandler::MinionOrchestration)
+      end
     end
-    # rubocop:enable RSpec/ExampleLength
 
-    # rubocop:disable RSpec/ExampleLength
-    it "must return an instance of SaltHandler::MinionOrchestration when mods is not provided"\
-      " for orch.update" do
-      salt_event = described_class.new(
-        tag:  "salt/run/12345/ret",
-        data: { fun: "runner.state.orchestrate", fun_args: ["orch.update"] }.to_json
-      )
+    context "when the orchestration run is orch.update_etc_hosts" do
+      # rubocop:disable RSpec/ExampleLength
+      it "must not return an instance of SaltHandler::MinionOrchestration" do
+        salt_event = described_class.new(
+          tag:  "salt/run/12345/ret",
+          data: { fun:      "runner.state.orchestrate",
+                  fun_args: [{ mods: "orch.update_etc_hosts" }] }.to_json
+        )
 
-      expect(salt_event.handler).to be_an_instance_of(SaltHandler::MinionOrchestration)
+        expect(salt_event.handler).not_to be_an_instance_of(SaltHandler::MinionOrchestration)
+      end
+      # rubocop:enable RSpec/ExampleLength
     end
-    # rubocop:enable RSpec/ExampleLength
-
-    # rubocop:disable RSpec/ExampleLength
-    it "must return an instance of SaltHandler::MinionOrchestration when mods is provided"\
-      " for orch.update" do
-      salt_event = described_class.new(
-        tag:  "salt/run/12345/ret",
-        data: { fun: "runner.state.orchestrate", fun_args: [{ mods: "orch.update" }] }.to_json
-      )
-
-      expect(salt_event.handler).to be_an_instance_of(SaltHandler::MinionOrchestration)
-    end
-    # rubocop:enable RSpec/ExampleLength
-
-    # rubocop:disable RSpec/ExampleLength
-    it "must not return an instance of SaltHandler::MinionOrchestration for"\
-      " orch.update_etc_hosts" do
-      salt_event = described_class.new(
-        tag:  "salt/run/12345/ret",
-        data: {
-          fun:      "runner.state.orchestrate",
-          fun_args: [{ mods: "orch.update_etc_hosts" }]
-        }.to_json
-      )
-
-      expect(salt_event.handler).not_to be_an_instance_of(SaltHandler::MinionOrchestration)
-    end
-    # rubocop:enable RSpec/ExampleLength
-
   end
 end

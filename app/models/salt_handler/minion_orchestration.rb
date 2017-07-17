@@ -14,14 +14,10 @@ class SaltHandler::MinionOrchestration
       salt_fun_args_match(parsed_event_data, "orch.kubernetes", "orch.update")
   end
 
+  # Returns true if the orchestration event matches any orchestration given in orchestrations.
   def self.salt_fun_args_match(parsed_event_data, *orchestrations)
     fun_args = parsed_event_data["fun_args"]
-
-    orchestrations.each do |o|
-      return true if fun_args.first == o || fun_args.first["mods"] == o
-    end
-
-    false
+    orchestrations.any? { |o| fun_args.first == o || fun_args.first["mods"] == o }
   end
 
   def initialize(salt_event)
