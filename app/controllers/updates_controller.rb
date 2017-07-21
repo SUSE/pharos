@@ -4,7 +4,9 @@ require "velum/salt"
 
 # UpdatesController handles all the interaction with the updates of all nodes.
 class UpdatesController < ApplicationController
-  before_action :admin_needs_update, only: :create
+  include AdminUpdates
+
+  before_action :admin_needs_update_hook, only: :create
 
   # Reboot the admin node.
   def create
@@ -19,13 +21,10 @@ class UpdatesController < ApplicationController
 
   protected
 
-  def admin_needs_update
-    needed, failed = ::Velum::Salt.update_status(targets: "*", cached: true)
-    status = Minion.computed_status("admin", needed, failed)
-
-    return if status == Minion.statuses[:update_needed] ||
-        status == Minion.statuses[:update_failed]
-
+  # It does nothing if the admin node needs an updated. Otherwise it will render
+  # a JSON with an `unknown` minion status.
+  def admin_needs_update_hook
+    return if admin_needs_update?
     render json: { status: Minion.statuses[:unknown] }
   end
 end

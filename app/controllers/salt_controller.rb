@@ -1,6 +1,10 @@
 require "velum/salt"
+
 # SaltController holds methods for triggering updates of nodes
 class SaltController < ApplicationController
+  include AdminUpdates
+
+  before_action :admin_needs_update_hook, only: :update
   skip_before_action :redirect_to_setup
 
   def update
@@ -24,5 +28,14 @@ class SaltController < ApplicationController
 
   def minion_id_param
     params.require(:minion_id)
+  end
+
+  protected
+
+  # It does nothing if the admin node does *not* need to be updated. Otherwise
+  # it will render a JSON with an `unknown` minion status.
+  def admin_needs_update_hook
+    return unless admin_needs_update?
+    render json: { status: Minion.statuses[:unknown] }
   end
 end
