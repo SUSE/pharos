@@ -29,6 +29,6 @@ class SaltHandler::MinionStart
     return false if minion_info.blank?
 
     # false if a minion with this minion_id or fqdn already exists (uniqueness validation)
-    Minion.new(minion_id: id, fqdn: minion_info["fqdn"]).save
+    Minion.new(minion_id: id, fqdn: minion_info["caasp_fqdn"]).save
   end
 end
