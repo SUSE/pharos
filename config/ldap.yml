@@ -25,5 +25,6 @@ authorizations: &AUTHORIZATIONS
   admin_user: <%= ENV["LDAP_BIND_DN"] || "" %>
   admin_password: <%= ENV["LDAP_BIND_PASSWORD"] || "" %>
   ssl: <%= ENV["LDAP_TLS_METHOD"] || "start_tls" %>
+  tree_base: <%= ENV["LDAP_BASE_DN"] || "" %>
 
   <<: *AUTHORIZATIONS
