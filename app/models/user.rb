@@ -86,7 +86,7 @@ class User < ApplicationRecord
       memberFound = false
       ldap.search(:base => treebase, :scope => Net::LDAP::SearchScope_BaseObject) do |entry|
         puts "found Admin group: #{entry.inspect}"
-        if (entry[:uniqueMember].is_a?(Array) and entry[:uniqueMember].include?(uid)) or entry[:uniqueMember].eql?(uid) 
+        if (entry[:uniquemember].is_a?(Array) and entry[:uniquemember].include?(uid)) or entry[:uniquemember].eql?(uid) 
           puts "found member in group"
           memberFound = true
         end
@@ -110,8 +110,12 @@ class User < ApplicationRecord
         end
       elsif not memberFound
         # if the group already exists, make sure this user is in there
-        result = ldap.add_attribute(:dn => treebase, :attribute => :uniqueMember, :value => userDN)
-        if not result 
+        ops = [
+          [:add, :uniqueMember, userDN]
+        ]
+        result = ldap.modify(:dn => treebase, :operations => ops)
+        # code 20 = modify/add: uniqueMember: value #0 already exists
+        if not result and not ldap.get_operation_result.code == 20
           raise Exception.new("Unable to add user to Administrators group in LDAP: #{ldap.get_operation_result.message}")
         end
       end

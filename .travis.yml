@@ -13,7 +13,7 @@ rvm:
   - ruby-head
 
 env:
-  - RSPEC_FAIL_FAST=false LDAP_BIND_PASSWORD=Password1234 LDAP_TLS_METHOD=simple LDAP_PORT=3389
+  - RSPEC_FAIL_FAST=false LDAP_BIND_PASSWORD=Password1234 LDAP_TLS_METHOD=simple LDAP_PORT=3389 LDAP_HOST=localhost
 # Used to get a better understanding of flaky tests. With a fail fast and a flaky test, the test.log
 # file will probably contain relevant information to fix the problem.
 #  - RSPEC_FAIL_FAST=true
@@ -39,7 +39,7 @@ before_install:
 before_script:
   - mkdir /tmp/slapd
   - slapd -f slapd.conf -h ldap://localhost:3389 &
-  - sleep 3
+  - sleep 5
   - bundle exec rake db:setup
 
 script:
