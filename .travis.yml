@@ -17,6 +17,8 @@ env:
 # Used to get a better understanding of flaky tests. With a fail fast and a flaky test, the test.log
 # file will probably contain relevant information to fix the problem.
 #  - RSPEC_FAIL_FAST=true
+  - LDAP_BIND_PASSWORD=Password1234
+  - LDAP_TLS_METHOD=simple
 
 matrix:
   allow_failures:
@@ -38,6 +40,9 @@ before_install:
 
 before_script:
   - bundle exec rake db:setup
+  - mkdir /tmp/slapd
+  - slapd -f slapd.conf -h ldap://localhost:3389 &
+  - sleep 3
 
 script:
   - bundle exec rspec spec
@@ -49,6 +54,10 @@ addons:
   code_climate:
     repo_token: f6e3f94baf7a2d672fa17cd11deb8d3e0709be5350ad0dd11e33f44f54d540bd
   mariadb: '10.0'
+  apt:
+    packages:
+    - ldap-utils
+    - slapd
 
 after_success:
   - bundle exec codeclimate-test-reporter
