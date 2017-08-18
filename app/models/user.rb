@@ -20,7 +20,7 @@ class User < ApplicationRecord
       # check to see if this is because the LDAP auth succeeded, or if we're coming from registration
       # we do this by performing an LDAP search for the new user. If it fails, we need to create the
       # user in LDAP
-      ldap_config = YAML.load(ERB.new(File.read(::Devise.ldap_config || "#{Rails.root}/config/ldap.yml")).result)[Rails.env]
+      ldap_config = YAML.load(ERB.new(File.read(::Devise.ldap_config || Rails.root.join("config", "ldap.yml"))).result)[Rails.env]
       
       ldap = Net::LDAP.new :host => ldap_config["host"],
         :port => ldap_config["port"],
