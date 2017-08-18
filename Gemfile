@@ -21,7 +21,7 @@ gem "gravatar_image_tag"
 gem "devise"
 gem "kubeclient", "~> 2.3.0"
 gem "devise_ldap_authenticatable"
-gem "net-ldap", :require => "net/ldap"
+gem "net-ldap", require: "net/ldap"
 
 # Assets group.
 #

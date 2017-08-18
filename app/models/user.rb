@@ -59,13 +59,10 @@ class User < ApplicationRecord
       treebase = ldap_config["group_base"]
       groupFound = false
       ldap.search(:base => treebase, :scope => Net::LDAP::SearchScope_BaseObject) do |entry|
-        puts "found group: #{entry.inspect}"
         groupFound = true
       end
 
       if not groupFound
-        puts "Group not found, add it"
-
         groupDN = Net::LDAP::DN.new(treebase).to_a
 
         attrs = {
@@ -80,14 +77,11 @@ class User < ApplicationRecord
       end
 
       # next, look for the Administrators group in the group base
-      puts ldap_config.inspect
       treebase = ldap_config["required_groups"][0]
       groupFound = false
       memberFound = false
       ldap.search(:base => treebase, :scope => Net::LDAP::SearchScope_BaseObject) do |entry|
-        puts "found Admin group: #{entry.inspect}"
         if (entry[:uniquemember].is_a?(Array) and entry[:uniquemember].include?(uid)) or entry[:uniquemember].eql?(uid) 
-          puts "found member in group"
           memberFound = true
         end
         groupFound = true
@@ -101,8 +95,6 @@ class User < ApplicationRecord
           :objectclass => ["top", "groupOfUniqueNames"],
           :uniqueMember => userDN,
         }
-
-        puts "attrs = #{attrs.inspect}"
 
         result = ldap.add(:dn => treebase, :attributes => attrs)
         if not result 
