@@ -22,14 +22,23 @@ class User < ApplicationRecord
       # user in LDAP
       ldap_config = YAML.load(ERB.new(File.read(::Devise.ldap_config || Rails.root.join("config", "ldap.yml"))).result)[Rails.env]
       
-      ldap = Net::LDAP.new :host => ldap_config["host"],
+      conn_params = {
+        :host => ldap_config["host"],
         :port => ldap_config["port"],
         :auth => {
-          :encryption => :start_tls,
           :method => :simple,
           :username => ldap_config["admin_user"],
           :password => ldap_config["admin_password"],
+        }
       }
+
+      if ldap_config.has_key?("ssl")
+        conn_params[:auth].merge!(
+          :encryption => :ldap_config["ssl"].to_sym,
+        )
+      end
+
+      ldap = Net::LDAP.new **conn_params
 
       uid = email[0,email.index('@')]
       userDN = "uid=#{uid},#{ldap_config['base']}"
