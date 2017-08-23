@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-require 'net/ldap/dn'
+require "net/ldap/dn"
+require "velum/ldap"
 
 # User represents administrators in this application.
 class User < ApplicationRecord
@@ -15,13 +16,18 @@ class User < ApplicationRecord
 
   def create_ldap_user
     # add to OpenLDAP - this should be disabled when using any other LDAP server!
-    if new_record?
 
+    # Behavior:
+    # 1) make sure the People org unit exists, if not, create it
+    # 2) make sure the Administrators groupOfUniqueNames exists, if not, create it
+    # 3) check if the new user created is a member of the Administrators group, if not, add it
+    # 4) check if the user exists, if not, add it
+    if new_record?
       # check to see if this is because the LDAP auth succeeded, or if we're coming from registration
       # we do this by performing an LDAP search for the new user. If it fails, we need to create the
       # user in LDAP
       ldap_config = YAML.load(ERB.new(File.read(::Devise.ldap_config || Rails.root.join("config", "ldap.yml"))).result)[Rails.env]
-      
+
       conn_params = {
         :host => ldap_config["host"],
         :port => ldap_config["port"],
@@ -32,17 +38,13 @@ class User < ApplicationRecord
         }
       }
 
-      if ldap_config.has_key?("ssl")
-        conn_params[:auth].merge!(
-          :encryption => :ldap_config["ssl"].to_sym,
-        )
-      end
+      Velum::LDAP::configure_ldap_tls!(ldap_config, conn_params)
 
       ldap = Net::LDAP.new **conn_params
 
       uid = email[0,email.index('@')]
       userDN = "uid=#{uid},#{ldap_config['base']}"
-      
+
       # first, look for the People org unit
       treebase = ldap_config["base"]
       found = false
@@ -59,10 +61,8 @@ class User < ApplicationRecord
         }
 
         result = ldap.add(:dn => treebase, :attributes => attrs)
-        if not result 
-          raise Exception.new("Unable to create People organizational unit in LDAP: #{ldap.get_operation_result.message}")
-        end
-      end        
+        Velum::LDAP::fail_if_with(result, "Unable to create People organizational unit in LDAP: #{ldap.get_operation_result.message}")
+      end
 
       # next, look for the group base
       treebase = ldap_config["group_base"]
@@ -80,9 +80,7 @@ class User < ApplicationRecord
         }
 
         result = ldap.add(:dn => treebase, :attributes => attrs)
-        if not result 
-          raise Exception.new("Unable to create Group organizational unit in LDAP: #{ldap.get_operation_result.message}")
-        end
+        Velum::LDAP::fail_if_with(result, "Unable to create Group organizational unit in LDAP: #{ldap.get_operation_result.message}")
       end
 
       # next, look for the Administrators group in the group base
@@ -90,7 +88,7 @@ class User < ApplicationRecord
       groupFound = false
       memberFound = false
       ldap.search(:base => treebase, :scope => Net::LDAP::SearchScope_BaseObject) do |entry|
-        if (entry[:uniquemember].is_a?(Array) and entry[:uniquemember].include?(uid)) or entry[:uniquemember].eql?(uid) 
+        if (entry[:uniquemember].is_a?(Array) and entry[:uniquemember].include?(userDN)) or entry[:uniquemember].eql?(userDN)
           memberFound = true
         end
         groupFound = true
@@ -106,21 +104,16 @@ class User < ApplicationRecord
         }
 
         result = ldap.add(:dn => treebase, :attributes => attrs)
-        if not result 
-          raise Exception.new("Unable to create Administrators group of unique names in LDAP: #{ldap.get_operation_result.message}")
-        end
+        Velum::LDAP::fail_if_with(result, "Unable to create Administrators group of unique names in LDAP: #{ldap.get_operation_result.message}")
       elsif not memberFound
         # if the group already exists, make sure this user is in there
         ops = [
           [:add, :uniqueMember, userDN]
         ]
         result = ldap.modify(:dn => treebase, :operations => ops)
-        # code 20 = modify/add: uniqueMember: value #0 already exists
-        if not result and not ldap.get_operation_result.code == 20
-          raise Exception.new("Unable to add user to Administrators group in LDAP: #{ldap.get_operation_result.message}")
-        end
+        Velum::LDAP::fail_if_with(result, "Unable to add user to Administrators group in LDAP: #{ldap.get_operation_result.message}")
       end
-      
+
       filter = Net::LDAP::Filter.eq(ldap_config["attribute"], email)
       treebase = ldap_config["base"]
       found = false
@@ -140,9 +133,7 @@ class User < ApplicationRecord
         }
 
         result = ldap.add(:dn => "#{userDN}", :attributes => attrs)
-        if not result 
-          raise Exception.new("Unable to create Person in LDAP: #{ldap.get_operation_result.message}")
-        end
+        Velum::LDAP::fail_if_with(result, "Unable to create Person in LDAP: #{ldap.get_operation_result.message}")
       end
     end
   end
