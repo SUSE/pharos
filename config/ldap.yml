@@ -1,22 +1,3 @@
-## Authorizations
-# Uncomment out the merging for each environment that you'd like to include.
-# You can also just copy and paste the tree (do not include the "authorizations") to each
-# environment if you need something different per enviornment.
-authorizations: &AUTHORIZATIONS
-  allow_unauthenticated_bind: false
-  group_base: <%= ENV["LDAP_GROUP_BASE_DN"] || "ou=Groups,dc=infra,dc=caasp,dc=local" %>
-  ## Requires config.ldap_check_group_membership in devise.rb be true
-  # Can have multiple values, must match all to be authorized
-  required_groups:
-    # If only a group name is given, membership will be checked against "uniqueMember"
-    - <%= ENV["LDAP_ADMIN_GROUP_DN"] || "cn=Administrators,ou=Groups,dc=infra,dc=caasp,dc=local" %>
-  ## Requires config.ldap_check_attributes in devise.rb to be true
-  ## Can have multiple attributes and values, must match all to be authorized
-  require_attribute:
-    objectClass: inetOrgPerson
-
-## Environment
-
 <%= Rails.env.downcase %>:
   host: <%= ENV["LDAP_HOST"] || "127.0.0.1" %>
   port: <%= (ENV["LDAP_PORT"] || "389").to_i %>
@@ -30,4 +11,14 @@ authorizations: &AUTHORIZATIONS
   <% end %>
   tree_base: <%= ENV["LDAP_BASE_DN"] || "dc=infra,dc=caasp,dc=local" %>
 
-  <<: *AUTHORIZATIONS
+  allow_unauthenticated_bind: false
+  group_base: <%= ENV["LDAP_GROUP_BASE_DN"] || "ou=Groups,dc=infra,dc=caasp,dc=local" %>
+  ## Requires config.ldap_check_group_membership in devise.rb be true
+  # Can have multiple values, must match all to be authorized
+  required_groups:
+    # If only a group name is given, membership will be checked against "uniqueMember"
+    - <%= ENV["LDAP_ADMIN_GROUP_DN"] || "cn=Administrators,ou=Groups,dc=infra,dc=caasp,dc=local" %>
+  ## Requires config.ldap_check_attributes in devise.rb to be true
+  ## Can have multiple attributes and values, must match all to be authorized
+  require_attribute:
+    objectClass: inetOrgPerson
