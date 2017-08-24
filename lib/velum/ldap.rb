@@ -1,18 +1,16 @@
 module Velum
+  # Helper methods for LDAP to appease rubocop
   class LDAP
     class << self
       def configure_ldap_tls!(ldap_config, conn_params)
-        if ldap_config.has_key?("ssl")
-          conn_params[:auth].merge!(
-            :encryption => ldap_config["ssl"].to_sym,
-          )
-        end
+        return unless ldap_config.key?("ssl")
+        conn_params[:auth].merge!(
+          encryption: ldap_config["ssl"].to_sym
+        )
       end
 
       def fail_if_with(result, message)
-        if not result
-          raise message
-        end
+        raise message unless result
       end
     end
   end
