@@ -57,6 +57,7 @@ addons:
     packages:
     - ldap-utils
     - slapd
+    - libmariadbclient-dev
 
 after_success:
   - bundle exec codeclimate-test-reporter
