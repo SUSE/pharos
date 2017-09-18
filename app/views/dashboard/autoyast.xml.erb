@@ -81,6 +81,7 @@
       <ask>
         <default>This system will not be registered. Reason: <%= @registration_error %></default>
         <type>static_text</type>
+        <timeout config:type="integer">30</timeout>
       </ask>
     </ask-list>
     <% end %>
