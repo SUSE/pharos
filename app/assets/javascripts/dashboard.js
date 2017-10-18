@@ -202,7 +202,7 @@ MinionPoller = {
   renderPendingNodes: function(pendingMinionId, hasPendingStateNode) {
     var acceptHtml;
 
-    if (hasPendingStateNode) {
+    if (hasPendingStateNode && !isSetRolesPage()) {
       acceptHtml = '';
     } else if (hasPendingAcceptance(pendingMinionId)) {
       acceptHtml = 'Acceptance in progress';
@@ -369,6 +369,10 @@ MinionPoller = {
       </tr>";
   }
 };
+
+function isSetRolesPage() {
+  return window.location.pathname === '/setup/discovery';
+}
 
 function hasPendingAcceptance(minionId) {
   return sessionStorage.getItem(minionId) === 'true';
