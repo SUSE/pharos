@@ -6,7 +6,7 @@ require "velum/ldap"
 # User represents administrators in this application.
 # rubocop:disable ClassLength
 class User < ApplicationRecord
-  enabled_devise_modules = [:ldap_authenticatable, :registerable,
+  enabled_devise_modules = [:ldap_authenticatable, :database_authenticatable, :registerable,
                             :rememberable, :trackable, :validatable].freeze
 
   devise(*enabled_devise_modules)
@@ -24,7 +24,6 @@ class User < ApplicationRecord
     # 2) make sure the Administrators groupOfUniqueNames exists, if not, create it
     # 3) check if the new user created is a member of the Administrators group, if not, add it
     # 4) check if the user exists, if not, add it
-    return unless new_record?
 
     # check to see if this is because the LDAP auth succeeded, or if we're coming from registration
     # we do this by performing an LDAP search for the new user. If it fails, we need to create the
