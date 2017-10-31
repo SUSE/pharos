@@ -6,7 +6,7 @@ require "velum/ldap"
 # User represents administrators in this application.
 # rubocop:disable ClassLength
 class User < ApplicationRecord
-  enabled_devise_modules = [:ldap_authenticatable, :registerable,
+  enabled_devise_modules = [:ldap_authenticatable, :database_authenticatable, :registerable,
                             :rememberable, :trackable, :validatable].freeze
 
   devise(*enabled_devise_modules)
