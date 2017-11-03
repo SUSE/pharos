@@ -13,4 +13,4 @@ default: &default
 
 <%= Rails.env.downcase %>:
   <<: *default
-  database: <%= ENV['VELUM_DB_NAME'] || "velum_#{Rails.env.downcase}" %>
+  database: <%= Rails.env.downcase == 'test' ? 'velum_test' : (ENV['VELUM_DB_NAME'] || "velum_#{Rails.env.downcase}") %>
