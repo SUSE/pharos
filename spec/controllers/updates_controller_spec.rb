@@ -26,7 +26,7 @@ RSpec.describe UpdatesController, type: :controller do
 
       post :create
       json = JSON.parse(response.body)
-      expect(json["status"]).to eq Minion.statuses[:unknown]
+      expect(json["status"]).to eq Minion.statuses[:up_to_date]
     end
 
     # rubocop:disable RSpec/ExampleLength

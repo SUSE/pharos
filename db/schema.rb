@@ -13,18 +13,12 @@
 
 ActiveRecord::Schema.define(version: 20171117145421) do
 
-  create_table "jids", id: false, force: :cascade do |t|
-    t.string "jid",  limit: 255,      null: false
-    t.text   "load", limit: 16777215, null: false
-  end
-
-  add_index "jids", ["jid"], name: "jid", unique: true, using: :btree
-
   create_table "minions", force: :cascade do |t|
-    t.string   "minion_id",  limit: 255
-    t.string   "fqdn",       limit: 255
-    t.integer  "role",       limit: 4
-    t.integer  "highstate",  limit: 4,   default: 0
+    t.string   "minion_id",     limit: 255
+    t.string   "fqdn",          limit: 255
+    t.integer  "role",          limit: 4
+    t.integer  "highstate",     limit: 4,   default: 0
+    t.integer  "update_status", limit: 4,   default: 0
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -55,34 +49,6 @@ ActiveRecord::Schema.define(version: 20171117145421) do
 
   add_index "pillars", ["minion_id"], name: "index_pillars_on_minion_id", using: :btree
   add_index "pillars", ["pillar"], name: "index_pillars_on_pillar", using: :btree
-
-  create_table "salt_events", force: :cascade do |t|
-    t.string   "tag",          limit: 255,      null: false
-    t.text     "data",         limit: 16777215, null: false
-    t.datetime "alter_time",                    null: false
-    t.string   "master_id",    limit: 255,      null: false
-    t.datetime "taken_at"
-    t.datetime "processed_at"
-    t.string   "worker_id",    limit: 255
-  end
-
-  add_index "salt_events", ["processed_at"], name: "index_salt_events_on_processed_at", using: :btree
-  add_index "salt_events", ["tag"], name: "tag", using: :btree
-  add_index "salt_events", ["worker_id", "taken_at"], name: "index_salt_events_on_worker_id_and_taken_at", using: :btree
-
-  create_table "salt_returns", id: false, force: :cascade do |t|
-    t.string   "fun",        limit: 50,       null: false
-    t.string   "jid",        limit: 255,      null: false
-    t.text     "return",     limit: 16777215, null: false
-    t.string   "id",         limit: 255,      null: false
-    t.string   "success",    limit: 10,       null: false
-    t.text     "full_ret",   limit: 16777215, null: false
-    t.datetime "alter_time",                  null: false
-  end
-
-  add_index "salt_returns", ["fun"], name: "fun", using: :btree
-  add_index "salt_returns", ["id"], name: "id", using: :btree
-  add_index "salt_returns", ["jid"], name: "jid", using: :btree
 
   create_table "users", force: :cascade do |t|
     t.datetime "created_at"

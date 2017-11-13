@@ -3,17 +3,15 @@ require "velum/salt_minion"
 # Minion represents the minions that have been registered in this application.
 class Minion < ApplicationRecord
   scope :assigned_role, -> { where.not role: nil }
+  scope :cluster_role, -> { where role: [Minion.roles[:master], Minion.roles[:worker]] }
   scope :unassigned_role, -> { where role: nil }
+  scope :accepted, -> { where.not highstate: Minion.highstates[:not_accepted] }
 
-  enum highstate: [:not_applied, :pending, :failed, :applied]
-  enum role: [:master, :worker]
-  enum status: [:unknown, :update_needed, :update_failed, :rebooting]
+  enum highstate: [:not_accepted, :not_applied, :pending, :failed, :applied]
+  enum role: [:master, :worker, :admin]
+  enum update_status: [:unknown, :up_to_date, :update_needed, :update_failed, :rebooting]
 
   validates :minion_id, presence: true, uniqueness: true
-  validates :fqdn, presence: true
-
-  # NOTE: this should be moved into a proper DB column as we do for highstates.
-  attr_accessor :update_status
 
   # Example:
   #   Minion.assign_roles(
@@ -58,11 +56,11 @@ class Minion < ApplicationRecord
   # of hashes.
   def self.computed_status(id, needed, failed)
     if failed.first && failed.first[id].present?
-      Minion.statuses[:update_failed]
+      Minion.update_statuses[:update_failed]
     elsif needed.first && needed.first[id].present?
-      Minion.statuses[:update_needed]
+      Minion.update_statuses[:update_needed]
     else
-      Minion.statuses[:unknown]
+      Minion.update_statuses[:up_to_date]
     end
   end
 
@@ -93,7 +91,7 @@ class Minion < ApplicationRecord
     needed, failed = ::Velum::Salt.update_status(targets: "*", cached: true)
     minions = Minion.assigned_role
     minions.each do |minion|
-      if Minion.computed_status(minion.minion_id, needed, failed) == Minion.statuses[:update_needed]
+      if Minion.computed_status(minion.minion_id, needed, failed) == Minion.update_statuses[:update_needed]
         Minion.find_by(minion_id: minion.minion_id).update(highstate: Minion.highstates[:pending])
       end
     end

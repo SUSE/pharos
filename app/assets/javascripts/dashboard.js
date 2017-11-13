@@ -136,7 +136,7 @@ MinionPoller = {
         // Build Pending Nodes display table
         if (pendingMinions.length) {
           for (i = 0; i < pendingMinions.length; i++) {
-            pendingRendered += MinionPoller.renderPendingNodes(pendingMinions[i], hasPendingStateNode);
+            pendingRendered += MinionPoller.renderPendingNodes(pendingMinions[i].minion_id, hasPendingStateNode);
           }
 
           $(".pending-nodes-container tbody").html(pendingRendered);

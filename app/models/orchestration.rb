@@ -8,7 +8,8 @@ class Orchestration < ApplicationRecord
   enum kind: [:bootstrap, :upgrade]
   enum status: [:in_progress, :succeeded, :failed]
 
-  after_create :update_minions
+  after_create :set_pending_minions
+  after_save :set_finished_minions
 
   # rubocop:disable Rails/SkipsModelValidations
   def run
@@ -45,12 +46,25 @@ class Orchestration < ApplicationRecord
 
   private
 
-  def update_minions
+  def set_pending_minions
     case kind
     when "bootstrap"
       Minion.mark_pending_bootstrap
     when "upgrade"
       Minion.mark_pending_update
+    end
+  end
+
+  def set_finished_minions
+    if status_changed? && status_was == "in_progress"
+      # rubocop:disable SkipsModelValidations
+      case status
+      when "succeeded"
+        Minion.pending.update_all highstate: Minion.highstates[:applied]
+      when "failed"
+        Minion.pending.update_all highstate: Minion.highstates[:failed]
+      end
+      # rubocop:enable SkipsModelValidations
     end
   end
 end

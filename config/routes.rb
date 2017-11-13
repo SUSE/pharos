@@ -43,6 +43,11 @@ Rails.application.routes.draw do
 
   namespace :internal_api, path: "internal-api" do
     namespace :v1 do
+      resource :auth, only: :create
+      resource :highstates, only: :update
+      resource :minions, only: :create
+      resources :orchestrations, only: [:create, :update], param: :jid
+      resource :presence, only: :update
       resource :pillar, only: :show
     end
   end

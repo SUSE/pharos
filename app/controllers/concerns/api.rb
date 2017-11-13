@@ -21,4 +21,10 @@ module Api
       end
     end
   end
+
+  private
+
+  def filter_known_minions
+    ok if event_data_params[:minion_id] == "ca"
+  end
 end

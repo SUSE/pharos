@@ -20,17 +20,9 @@ module Velum
     end
 
     # Returns the update status of the different minions.
-    def self.update_status(targets: "*", cached: false)
-      expiration = cached ? 1.second : 30.seconds
-
-      needed = Rails.cache.fetch("update_status", expires_in: expiration) do
-        _, res = Salt.call(action: "grains.get", arg: "tx_update_reboot_needed", targets: targets)
-        res
-      end
-      failed = Rails.cache.fetch("update_status_failed", expires_in: expiration) do
-        _, res = Salt.call(action: "grains.get", arg: "tx_update_failed", targets: targets)
-        res
-      end
+    def self.update_status(targets: "*")
+      _, needed = Salt.call(action: "grains.get", arg: "tx_update_reboot_needed", targets: targets)
+      _, failed = Salt.call(action: "grains.get", arg: "tx_update_failed", targets: targets)
       [needed["return"], failed["return"]]
     end
 
@@ -70,12 +62,17 @@ module Velum
       JSON.parse(res.body)
     end
 
+    def self.keys
+      res = perform_request(endpoint: "/keys", method: "get")
+      JSON.parse(res.body)["return"]
+    end
+
     # Call the salt orchestration.
     def self.orchestrate
       res = perform_request(endpoint: "/run", method: "post",
                             data: { client: "runner_async",
                                     fun:    "state.orchestrate",
-                                    mods:   "orch.kubernetes" })
+                                    arg:    ["orch.kubernetes"] })
       [res, JSON.parse(res.body)]
     end
 
@@ -84,7 +81,7 @@ module Velum
       res = perform_request(endpoint: "/run", method: "post",
                             data: { client: "runner_async",
                                     fun:    "state.orchestrate",
-                                    mods:   "orch.update" })
+                                    arg:    ["orch.update"] })
       [res, JSON.parse(res.body)]
     end
 
@@ -101,6 +98,44 @@ module Velum
         # TODO: improve error handling...
         val && val.include?("No such file or directory") ? nil : val
       end
+    end
+
+    # Consolidates salt status into Velum
+    #
+    # In most cases the only active job will be detecting the update status of all the minions in
+    # the cluster, since the rest of the operations are notified to Velum via salt reactors (to
+    # the internal API). This consolidation jobs are here just in case Velum did not receive the
+    # callback for whatever reason (it was down, not responding...)
+    def self.consolidate
+      loop do
+        detect_missing_minions
+        detect_missing_highstates
+        detect_missing_orchestration_results
+        discover_update_status
+        sleep 5.minutes # FIXME: make this a cron instead of a long running process
+      end
+    end
+
+    def self.detect_missing_minions
+      minions = Velum::Salt.minions.reject { |minion_id, _| minion_id == "ca" }
+      (minions.keys - Minion.all.pluck(:minion_id)).each do |minion_id|
+        Minion.find_or_create_by(minion_id: minion_id) do |minion|
+          if minion_id == "admin"
+            minion.role = Minion.roles[:admin]
+          end
+          minion.fqdn = minions[minion_id]["fqdn"]
+          minion.highstate = Minion.highstates[:not_applied]
+        end
+      end
+    end
+
+    def self.detect_missing_highstates
+    end
+
+    def self.detect_missing_orchestration_results
+    end
+
+    def self.discover_update_status
     end
   end
 end
