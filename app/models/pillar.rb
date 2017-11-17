@@ -1,9 +1,15 @@
+require "velum/salt"
+
 # Pillar represents a pillar value on Salt.
 class Pillar < ApplicationRecord
   validates :pillar, presence: true
   validates :value, presence: true
 
   scope :global, -> { where minion_id: nil }
+
+  attr_accessor :refresh
+
+  after_save :refresh_external_pillar, if: :refresh
 
   PROTECTED_PILLARS = [:dashboard, :apiserver, :dashboard_external_fqdn].freeze
 
@@ -76,5 +82,10 @@ class Pillar < ApplicationRecord
         end
       end
     end
+  end
+
+  # https://docs.saltstack.com/en/latest/topics/development/external_pillars.html#reminder
+  def refresh_external_pillar
+    Velum::Salt.call(action: "saltutil.refresh_pillar")
   end
 end
