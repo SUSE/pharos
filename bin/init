@@ -5,6 +5,7 @@
 set -e
 
 : ${VELUM_PORT:=80}
+: ${RAILS_ENV:=production}
 
 setup_root_ca() {
   # Velum is going to need this CA to talk to the running CaaSP Cluster
@@ -27,7 +28,9 @@ setup_database() {
   export TEMPORARY_SERVER_PID=$!
 
   while [ $RETRY -ne 0 ]; do
-    case $(bundle exec rails r bin/check_db.rb | grep DB) in
+    # FIXME: we need to set the environmet only as long as salt-master accesses mysql directly
+    # if that is fixed, and we use a velum_development database we can remove this again
+    case $(RAILS_ENV=$RAILS_ENV bundle exec rails r bin/check_db.rb | grep DB) in
       "DB_DOWN")
         if [ "$COUNT" -ge "$TIMEOUT" ]; then
           printf " [FAIL]\n"
