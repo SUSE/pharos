@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 source "https://rubygems.org"
 
 gem "puma"
@@ -12,7 +13,7 @@ gem "font-awesome-rails"
 # NOTE: this is no longer needed in Rails 5. See
 # https://github.com/heroku/rails_stdout_logging#rails-5 for instructions on how
 # to transition.
-gem "rails_stdout_logging", group: [:development, :staging, :production]
+gem "rails_stdout_logging", group: %i(development staging production)
 
 gem "bcrypt", "~> 3.1.7"
 gem "mysql2"
