@@ -52,7 +52,7 @@ end
 unless ENV["PACKAGING"] && ENV["PACKAGING"] == "yes"
   group :development, :test do
     gem "rspec-rails"
-    gem "rubocop", "~> 0.46", require: false
+    gem "rubocop", "~> 0.49", require: false
     gem "brakeman", require: false
     gem "database_cleaner"
     gem "pry"
