@@ -1,5 +1,5 @@
 MAX_THREADS = ENV.fetch("VELUM_THREADS", 5).freeze
-MAX_WORKERS = ENV.fetch("VELUM_WORKERS", 2).freeze
+MAX_WORKERS = ENV.fetch("VELUM_WORKERS", 5).freeze
 
 # frozen_string_literal: true
 # Puma can serve each request in a thread from an internal thread pool.
