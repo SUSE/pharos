@@ -38,3 +38,9 @@ environment ENV.fetch("RAILS_ENV") { "development" }
 # end
 
 bind "unix:///var/run/puma/#{SOCKET_NAME}"
+
+stdout_redirect(
+  "/srv/velum/log/#{ENV.fetch("RAILS_ENV")}.out",
+  "/srv/velum/log/#{ENV.fetch("RAILS_ENV")}.err",
+  true
+)
