@@ -7,23 +7,12 @@ h1 Initial CaaS Platform Configuration
       h3.panel-title Generic settings
     .panel-body
       .form-group
-        = f.label :dashboard, "Internal Dashboard FQDN/IP"
+        = f.label :dashboard, "Dashboard location"
         .input-group
           = f.text_field :dashboard, value: @dashboard, class: "form-control", required: true
           span class="input-group-addon"
             a data-toggle="tooltip" data-placement="left" title="Fully qualified domain name or IP used to reach Velum within the internal network. The external fqdn will have to be provided in a later step."
               i class='glyphicon glyphicon-info-sign'
-
-  .panel.panel-default
-    .panel-heading.clearfix
-      h3.panel-title Cluster services
-
-    .panel-body
-      .form-group
-        .checkbox
-          label
-            = f.check_box "tiller", { checked: @tiller }, "true", "false"
-            | Install Tiller (Helm's server component)
 
   .panel.panel-default
     .panel-heading.clearfix
@@ -133,6 +122,27 @@ h1 Initial CaaS Platform Configuration
             = label_tag :proxy_systemwide, nil, class: "btn btn-default #{'btn-primary active' if @proxy_systemwide == "true"}"
               = f.radio_button :proxy_systemwide, "true", checked: @proxy_systemwide == "true"
               | Entire node
+
+  .panel.panel-default
+    .panel-heading.clearfix
+      h3.panel-title Cloud provider settings
+      .btn-group.btn-group-sm.btn-group-toggle.pull-right data-toggle="buttons"
+        = label_tag :cloud_toggle, nil, class: "btn btn-default #{'btn-primary active' if @enable_cloud}", data: {toggle: "collapse", target: "#cloud-settings-panel"}
+          = f.radio_button :enable_cloud, "enable", checked: @enable_cloud
+          | Enable
+        = label_tag :cloud_toggle, nil, class: "btn btn-default #{'btn-primary active' unless @enable_cloud}", data: {toggle: "collapse", target: "#cloud-settings-panel"}
+          = f.radio_button :enable_cloud, "disable", checked: !@enable_cloud
+          | Disable
+
+    #cloud-settings-panel.panel-collapse.collapse class="#{'in' if @enable_cloud}"
+      .panel-body
+        .form-group
+          = f.label :auth_url, "OpenStack API endpoint"
+          = f.url_field :auth_url, value: @os_auth_url, class: "form-control"
+        .form-group
+          = f.label :domain, "OpenStack Domain"
+          = f.url_field :domain, value: @os_domain, class: "form-control"
+
 
   .clearfix.steps-container
     = submit_tag "Next", class: "btn btn-primary pull-right"
