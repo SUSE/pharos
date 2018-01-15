@@ -17,7 +17,7 @@
         .form-group.mirror-url-group
           = f.label :url, "URL"
           .input-group
-            = f.url_field :url, value: @suse_registry_mirror.url, class: "form-control", placeholder: "https://suse-mirror.local.lan:5000"
+            = f.url_field :mirror, value: @suse_registry_mirror.mirror, class: "form-control", placeholder: "https://suse-mirror.local.lan:5000"
             span class="input-group-addon"
               a data-toggle="tooltip" data-placement="left" title="This is the URL of the local registry configured to be a mirror of the SUSE container registry. Use the http:// or https:// prefixes depending on how the local mirror has been deployed. Include also the port number if the mirror isn't using a standard one, eg: https://suse-mirror.local.lan:5000"
                 i class='glyphicon glyphicon-info-sign'

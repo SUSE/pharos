@@ -15,6 +15,10 @@ class DockerRegistry < ActiveRecord::Base
       errors
     end
 
+    def mirrors_by_group(url)
+      where(url: url).map(&:mirror)
+    end
+
     private
 
     # create or update DockerRegistry model

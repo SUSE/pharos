@@ -31,7 +31,7 @@ class SetupController < ApplicationController
     @services_cidr = Pillar.value(pillar: :services_cidr) || "172.24.0.0/16"
     @api_cluster_ip = Pillar.value(pillar: :api_cluster_ip) || "172.24.0.1"
     @dns_cluster_ip = Pillar.value(pillar: :dns_cluster_ip) || "172.24.0.2"
-    @suse_registry_mirror = DockerRegistry.find_or_initialize_by(mirror: SUSE_REGISTRY_URL)
+    @suse_registry_mirror = DockerRegistry.find_or_initialize_by(url: SUSE_REGISTRY_URL)
     @suse_registry_mirror_enabled = @suse_registry_mirror.persisted?
     @suse_registry_mirror_certificate_enabled = @suse_registry_mirror.certificate.present?
   end
@@ -123,7 +123,7 @@ class SetupController < ApplicationController
     end
 
     if params["settings"]["suse_registry_mirror_enabled"] == "enable"
-      parameters["mirror"] = SUSE_REGISTRY_URL
+      parameters["url"] = SUSE_REGISTRY_URL
     end
 
     [parameters]
