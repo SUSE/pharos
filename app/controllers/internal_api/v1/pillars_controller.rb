@@ -22,9 +22,9 @@ class InternalApi::V1::PillarsController < InternalApiController
   def registry_contents
     registries = DockerRegistry.all.map do |reg|
       {
-        url:         reg.url,
-        mirror:      reg.mirror,
-        certificate: (reg.certificate.present? ? reg.certificate.certificate : nil)
+        url:     reg.url,
+        mirrors: [reg.mirror],
+        cert:    (reg.certificate.present? ? reg.certificate.certificate : nil)
       }
     end
     { registries: registries }
