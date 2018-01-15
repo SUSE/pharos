@@ -16,7 +16,7 @@ class DockerRegistry < ActiveRecord::Base
     end
 
     def mirrors_by_group(url)
-      find_by(url: url).map(&:mirror)
+      where(url: url).map(&:mirror)
     end
 
     private
