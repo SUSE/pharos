@@ -11,7 +11,30 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171027115228) do
+ActiveRecord::Schema.define(version: 20180110112210) do
+
+  create_table "certificate_services", force: :cascade do |t|
+    t.integer  "certificate_id", limit: 4
+    t.integer  "service_id",     limit: 4
+    t.string   "service_type",   limit: 255
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "certificate_services", ["certificate_id", "service_id", "service_type"], name: "index_certificate_services_on_certificate_id_and_service", unique: true, using: :btree
+
+  create_table "certificates", force: :cascade do |t|
+    t.text     "certificate", limit: 65535
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "docker_registries", force: :cascade do |t|
+    t.string   "url",        limit: 255
+    t.string   "mirror",     limit: 255
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "jids", id: false, force: :cascade do |t|
     t.string "jid",  limit: 255,      null: false
