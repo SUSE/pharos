@@ -120,7 +120,7 @@ GEM
       url_safe_base64
     json-schema (2.8.0)
       addressable (>= 2.4)
-    kubeclient (2.4.0)
+    kubeclient (2.5.1)
       http (= 0.9.8)
       recursive-open-struct (= 1.0.0)
       rest-client
@@ -342,7 +342,7 @@ DEPENDENCIES
   jbuilder (~> 2.5)
   jquery-rails
   json-schema
-  kubeclient (~> 2.4.0)
+  kubeclient
   mysql2
   net-ldap
   openid_connect
