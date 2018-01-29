@@ -1,8 +1,18 @@
+require "rails_helper"
+
 describe Pillar do
   subject { create(:pillar) }
 
   it { is_expected.to validate_presence_of(:pillar) }
   it { is_expected.to validate_presence_of(:value) }
+
+  it "refreshes salt when saved" do
+    pillar = build(:pillar, refresh: true)
+
+    VCR.use_cassette("salt/refresh_pillar", allow_unused_http_interactions: false) do
+      pillar.save
+    end
+  end
 
   describe "#apply" do
     let(:settings_params) do
@@ -49,6 +59,5 @@ describe Pillar do
         end
       end
     end
-
   end
 end
