@@ -105,8 +105,6 @@ class OidcController < ApplicationController
     @cluster_name = "caasp"
     @apiserver_host = kubeconfig.host
     @ca_crt = kubeconfig.ca_crt
-    @client_crt = kubeconfig.client_crt
-    @client_key = kubeconfig.client_key
   end
 
   def authorization_uri(nonce)

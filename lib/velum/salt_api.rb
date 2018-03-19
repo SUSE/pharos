@@ -43,6 +43,10 @@ module Velum
         }.freeze
       end
 
+      def timeout
+        { timeout: 1000 }
+      end
+
       # Returns salt hostname for the current environment.
       def hostname
         "#{ENV["VELUM_SALT_HOST"]}:#{ENV["VELUM_SALT_PORT"]}"
@@ -71,10 +75,10 @@ module Velum
         req["Content-Type"] = "application/json; charset=utf-8"
 
         if is_tokenless_request
-          req.body = data.merge(auth_details).to_json
+          req.body = data.merge(auth_details).merge(timeout).to_json
         else
           req["X-Auth-Token"] = token
-          req.body = data.to_json if data.present?
+          req.body = data.merge(timeout).to_json if data.present?
         end
 
         opts = {
@@ -82,7 +86,7 @@ module Velum
           ca_file:      "/etc/pki/ca.crt",
           ssl_version:  :TLSv1,
           open_timeout: 2,
-          read_timeout: 30
+          read_timeout: 1
         }
 
         Net::HTTP.start(uri.hostname, uri.port, opts) { |http| http.request(req) }

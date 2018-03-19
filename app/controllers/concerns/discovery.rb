@@ -9,7 +9,11 @@ module Discovery
   def discovery
     assigned_minions                  = assigned_with_status
     unassigned_minions                = Minion.unassigned_role
-    pending_minions                   = ::Velum::Salt.pending_minions
+    begin
+      pending_minions                 = ::Velum::Salt.pending_minions
+    rescue Velum::SaltApi::SaltConnectionException
+      pending_minions                 = []
+    end
     retryable_bootstrap_orchestration = Orchestration.retryable? kind: :bootstrap
     retryable_upgrade_orchestration   = Orchestration.retryable? kind: :upgrade
 
@@ -49,10 +53,18 @@ module Discovery
     end
 
     minions
+  rescue Velum::SaltApi::SaltConnectionException
+    minions = Minion.assigned_role
+    minions.each do |minion|
+      minion.update_status = Minion.statuses[:unknown]
+    end
+    minions
   end
 
   def admin_status
     needed, failed = ::Velum::Salt.update_status(targets: "*", cached: true)
     { update_status: Minion.computed_status("admin", needed, failed) }
+  rescue Velum::SaltApi::SaltConnectionException
+    { update_status: Minion.statuses[:unknown] }
   end
 end
