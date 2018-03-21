@@ -1,6 +1,6 @@
-WORKERS = ENV.fetch("VELUM_WORKERS", 8).freeze
-MIN_THREADS = ENV.fetch("VELUM_MIN_THREADS", 8).freeze
-MAX_THREADS = ENV.fetch("VELUM_MAX_THREADS", 32).freeze
+WORKERS = ENV.fetch("VELUM_WORKERS", 2).freeze
+MIN_THREADS = ENV.fetch("VELUM_MIN_THREADS", 5).freeze
+MAX_THREADS = ENV.fetch("VELUM_MAX_THREADS", 5).freeze
 SOCKET_NAME = ENV.fetch("VELUM_SOCKET_NAME", "dashboard.sock").freeze
 
 # Puma can serve each request in a thread from an internal thread pool.
