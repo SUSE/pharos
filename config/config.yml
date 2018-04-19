@@ -1,0 +1,6 @@
+# If enabled, then users can signup with the signup form. Otherwise, user
+# creation is completely disabled.
+#   - Using the "portus:create_user" rake task.
+# FIXME: should we create the velum:create_user task too?
+signup:
+  enabled: true

@@ -8,7 +8,7 @@
       p SUSE CaaS Platform allows you to provision, manage, and scale container-based applications.
       p It automates your tedious management tasks allowing you to focus on development and writing apps to meet business goals.
     p
-      - if User.count.zero?
+      - if User.count.zero? && APP_CONFIG.enabled?("signup")
         | Don't have an account?
         a.btn.btn-default[href="/users/sign_up"]
           | Create an account

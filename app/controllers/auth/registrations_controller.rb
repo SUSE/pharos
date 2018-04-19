@@ -14,7 +14,7 @@ class Auth::RegistrationsController < Devise::RegistrationsController
 
   # Restrict the amount of admin users to 1, see bsc#1040831
   def restrict_admin_users
-    return if User.count.zero?
+    return if User.count.zero? && APP_CONFIG.enabled?("signup")
     flash[:alert] = "Admin user already exists."
     redirect_to root_path
   end
