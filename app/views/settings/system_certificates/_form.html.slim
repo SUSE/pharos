@@ -1,0 +1,6 @@
+= form_for [:settings, @system_certificate], html: { class: "system-certificate-form"} do |f|
+  = render :partial '_fields', locals { f: f, required: true }
+
+.form-actions.clearfix
+  = f.submit "Save", class: "btn btn-primary action"
+  = link_to "Cancel", settings_system_certificates_path, class: "btn btn-default action"

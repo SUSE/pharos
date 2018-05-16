@@ -1,3 +1,4 @@
+require "pp"
 require "velum/salt"
 require "velum/instance_type"
 
@@ -51,6 +52,11 @@ class SetupController < ApplicationController
 
     # container runtime setting
     @cri = Pillar.value(pillar: :container_runtime) || "docker"
+
+    # allow adding system certificate: required if a user uses CPI with a
+    # self-signed certificate
+    @system_certificate = SystemCertificate.new
+    @cert = Certificate.new
   end
   # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/AbcSize
 
@@ -60,10 +66,12 @@ class SetupController < ApplicationController
                        unprotected_pillars: unprotected_pillars)
     registry_errors = Registry.configure_suse_registry(suse_registry_mirror_params)
 
-    if res.empty? && registry_errors.empty?
+    certificate_errors = SystemCertificate.create_system_certificate(system_certificate_params)
+
+    if res.empty? && registry_errors.empty? && certificate_errors.empty?
       redirect_to setup_worker_bootstrap_path
     else
-      redirect_to setup_path, alert: res + registry_errors
+      redirect_to setup_path, alert: res + registry_errors + certificate_errors
     end
   end
 
@@ -151,7 +159,9 @@ class SetupController < ApplicationController
 
   # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity, Metrics/AbcSize
   def settings_params
-    settings = params.require(:settings).permit(*Pillar.all_pillars.keys)
+    settings = params.require(:settings)
+                     .permit(*Pillar.all_pillars.keys,
+                             system_certificate: [:name, :certificate])
 
     if params["settings"]["enable_proxy"] == "disable"
       settings["proxy_systemwide"] = "false"
@@ -213,6 +223,10 @@ class SetupController < ApplicationController
 
   def update_nodes_params
     params.require(:roles)
+  end
+
+  def system_certificate_params
+    settings_params[:system_certificate]
   end
 
   def proxy_enabled
