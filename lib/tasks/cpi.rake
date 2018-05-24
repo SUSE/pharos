@@ -23,6 +23,7 @@ namespace :cpi do
       when "region" then              cfg["cloud:openstack:region"] = value
       when "username" then            cfg["cloud:openstack:username"] = value
       when "password" then            cfg["cloud:openstack:password"] = value
+      when "trust_id" then            cfg["cloud:openstack:trust_id"] = value
       when "subnet-id" then           cfg["cloud:openstack:subnet_id"] = value
       when "floating-network-id" then cfg["cloud:openstack:floating_id"] = value
       when "monitor-max-retries" then cfg["cloud:openstack:lb_mon_retries"] = value

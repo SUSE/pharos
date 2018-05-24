@@ -46,6 +46,7 @@ class SetupController < ApplicationController
     @cloud_openstack_region = Pillar.value(pillar: :cloud_openstack_region)
     @cloud_openstack_username = Pillar.value(pillar: :cloud_openstack_username)
     @cloud_openstack_password = Pillar.value(pillar: :cloud_openstack_password)
+    @cloud_openstack_trust_id = Pillar.value(pillar: :cloud_openstack_trust_id)
     @cloud_openstack_subnet = Pillar.value(pillar: :cloud_openstack_subnet)
     @cloud_openstack_floating = Pillar.value(pillar: :cloud_openstack_floating)
     @cloud_openstack_lb_mon_retries = Pillar.value(pillar: :cloud_openstack_lb_mon_retries) || "3"

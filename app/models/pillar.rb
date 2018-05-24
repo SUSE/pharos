@@ -118,6 +118,8 @@ class Pillar < ApplicationRecord
           "cloud:openstack:username",
         cloud_openstack_password:
           "cloud:openstack:password",
+        cloud_openstack_trust_id:
+          "cloud:openstack:trust_id",
         cloud_openstack_subnet:
           "cloud:openstack:subnet",
         cloud_openstack_floating:

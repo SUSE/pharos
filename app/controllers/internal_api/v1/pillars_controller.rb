@@ -137,6 +137,7 @@ class InternalApi::V1::PillarsController < InternalApiController
           auth_url:       Pillar.value(pillar: :cloud_openstack_auth_url),
           username:       Pillar.value(pillar: :cloud_openstack_username),
           password:       Pillar.value(pillar: :cloud_openstack_password),
+          trust_id:       Pillar.value(pillar: :cloud_openstack_trust_id),
           domain:         Pillar.value(pillar: :cloud_openstack_domain),
           domain_id:      Pillar.value(pillar: :cloud_openstack_domain_id),
           project:        Pillar.value(pillar: :cloud_openstack_project),

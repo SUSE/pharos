@@ -319,6 +319,7 @@ RSpec.describe InternalApi::V1::PillarsController, type: :controller do
             auth_url:       "http://keystone-test-host:5000/v3",
             username:       "testuser",
             password:       "pass",
+            trust_id:       "99905e50d80749b5a24292e830fff10c",
             domain:         "test",
             domain_id:      "9bc3e819a6ca648bb5e3c26c9e6c5e57",
             project:        "prj",

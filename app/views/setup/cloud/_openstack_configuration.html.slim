@@ -26,6 +26,9 @@
     = f.label :cloud_openstack_password, "Password"
     = f.password_field :cloud_openstack_password, value: @cloud_openstack_password, class: "form-control"
   .form-group
+    = f.label :cloud_openstack_trust_id, "Trust ID"
+    = f.text_field :cloud_openstack_trust_id, value: @cloud_openstack_trust_id, class: "form-control"
+  .form-group
     = f.label :cloud_openstack_subnet, "Subnet UUID for the #{product_name} private network"
     = f.text_field :cloud_openstack_subnet, value: @cloud_openstack_subnet, class: "form-control"
   .form-group
