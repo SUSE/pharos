@@ -47,6 +47,8 @@ class CloudCluster
       parts.push("in EC2")
     when "azure"
       parts.push("in Azure")
+    when "gce"
+      parts.push("in GCE")
     end
     parts.compact.join(" ")
   end
@@ -65,6 +67,7 @@ class CloudCluster
     persist_to_pillar!(:cloud_worker_net, @network_id)
     persist_to_pillar!(:cloud_worker_subnet_aws, @subnet_id)
     persist_to_pillar!(:cloud_worker_subnet_azure, @subnet_id)
+    persist_to_pillar!(:cloud_worker_subnet_gce, @subnet_id)
     persist_to_pillar!(:cloud_worker_security_group, @security_group_id)
     Velum::Salt.call(action: "saltutil.refresh_pillar")
   end
@@ -98,13 +101,13 @@ class CloudCluster
   def string_scope_if(attribute)
     value = send(attribute)
     description = attribute.to_s.humanize(capitalize: false)
-    return unless value
+    return unless value.present?
 
     "in the #{value} #{description}"
   end
 
   def persist_to_pillar!(key, value)
-    return unless value && Pillar.all_pillars[key]
+    return unless value.present? && Pillar.all_pillars[key]
 
     pillar = Pillar.find_or_initialize_by(pillar: Pillar.all_pillars[key])
     pillar.value = value

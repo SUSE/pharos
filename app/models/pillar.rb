@@ -91,6 +91,8 @@ class Pillar < ApplicationRecord
           "cloud:profiles:cluster_node:network_interfaces:0:SubnetId",
         cloud_worker_subnet_azure:
           "cloud:profiles:cluster_node:subnet",
+        cloud_worker_subnet_gce:
+          "cloud:profiles:cluster_node:subnetwork",
         cloud_worker_security_group:
           "cloud:profiles:cluster_node:network_interfaces:0:SecurityGroupId",
         cloud_storage_account:
