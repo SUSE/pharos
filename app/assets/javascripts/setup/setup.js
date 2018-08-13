@@ -28,4 +28,5 @@ $(function() {
 
   new SUSERegistryMirrorPanel('.suse-mirror-panel-body');
   new OpenStackSettings('.openstack-settings');
+  new BootstrapSettings(".bootstrap-settings");
 });
