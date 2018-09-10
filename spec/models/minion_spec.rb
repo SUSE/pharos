@@ -280,7 +280,7 @@ describe Minion do
     end
   end
 
-  describe "#mark_pending_bootstrap!" do
+  describe "#mark_pending_bootstrap" do
     before do
       minions
       described_class.second.assign_role :master, remote: false
@@ -292,7 +292,7 @@ describe Minion do
 
     context "when a bootstrap is triggered" do
       it "sets the highstate of all minions as pending" do
-        expect { described_class.mark_pending_bootstrap! }.to change {
+        expect { described_class.mark_pending_bootstrap }.to change {
           described_class.cluster_role.pending.count
         }.from(0).to(3)
       end

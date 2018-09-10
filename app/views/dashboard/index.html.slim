@@ -34,6 +34,17 @@ h1 Cluster Status
               span#out_dated_nodes 0
               = link_to update_path, id: "update-all-nodes", class: "hidden", method: :post do
                 | (update all nodes)
+            dt Orchestration
+            dd.orchestration-status
+              .in-progress
+                i.fa.fa-spinner.fa-spin.fa-pulse
+                |  In progress
+              .succeeded
+                i.fa.fa-check
+                |  Succeeded
+              .failed
+                i.fa.fa-times
+                |  Failed
     .panel-footer.admin-outdated-notification.hidden
       .message
         i.fa.fw.fa-exclamation-circle

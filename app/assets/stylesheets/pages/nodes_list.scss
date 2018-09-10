@@ -76,6 +76,24 @@
   .right-column dd {
     margin-left: 235px;
   }
+
+  .orchestration-status {
+    > div {
+      display: none;
+    }
+
+    &.in_progress .in_progress {
+      display: block;
+    }
+
+    &.failed .failed {
+      display: block;
+    }
+
+    &.succeeded .succeeded {
+      display: block;
+    }
+  }
 }
 
 .admin-outdated-notification {

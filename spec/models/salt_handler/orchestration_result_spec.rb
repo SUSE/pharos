@@ -198,8 +198,10 @@ describe SaltHandler::OrchestrationResult do
         expect { handler.process_event }.to change { pending_minion.reload.highstate }
           .from("pending").to("failed")
       end
-      it "does not affect applied minions" do
-        expect { handler.process_event }.not_to change { Minion.cluster_role.applied.count }.from(1)
+
+      it "marks applied minions as failed" do
+        expect { handler.process_event }.to change { applied_minion.reload.highstate }
+          .from("applied").to("failed")
       end
     end
 

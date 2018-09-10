@@ -19,7 +19,7 @@ module Discovery
           admin:                             Minion.find_by(minion_id: "admin"),
           retryable_bootstrap_orchestration: Orchestration.retryable?(kind: :bootstrap),
           retryable_upgrade_orchestration:   Orchestration.retryable?(kind: :upgrade),
-          last_orchestration_at:             Orchestration.last.try(:created_at)
+          last_orchestration:                Orchestration.last
         }
         render json: hsh
       end

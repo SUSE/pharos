@@ -8,8 +8,7 @@ class SettingsController < ApplicationController
   end
 
   def apply
-    Minion.mark_pending_bootstrap!
-    Orchestration.run(kind: :bootstrap)
+    Orchestration.run kind: :bootstrap
     redirect_to root_path, notice: "Registry settings are applied once orchestration is done."
   rescue Orchestration::OrchestrationOngoing
     redirect_to request.referer,
