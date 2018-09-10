@@ -4,6 +4,7 @@ State = {
   assignableErrors: [],
   pendingRemovalMinionId: null,
   hasPendingStateNode: false,
+  lastOrchestration: null,
 },
 
 MinionPoller = {
@@ -149,6 +150,7 @@ MinionPoller = {
         }
 
         State.minions = minions;
+        State.lastOrchestration = data.last_orchestration;
 
         var pendingStateMinion = minions.find(function (minion) {
           return minion.highstate == "pending";
@@ -213,6 +215,7 @@ MinionPoller = {
 
         MinionPoller.handleAdminUpdate(data.admin || {});
         MinionPoller.handleRetryableOrchestrations(data);
+        MinionPoller.handleOrchestrationStatus();
 
         handleBootstrapErrors();
         handleUnsupportedClusterConfiguration();
@@ -285,6 +288,26 @@ MinionPoller = {
     ';
   },
 
+  handleOrchestrationStatus: function() {
+    if (!State.lastOrchestration) {
+      return;
+    }
+
+    $('.orchestration-status').removeClass('failed succeeded in_progress text-sucess text-danger');
+    $('.orchestration-status').addClass(State.lastOrchestration.status);
+
+    switch (State.lastOrchestration.status) {
+      case 'succeeded':
+        $('.orchestration-status').addClass('text-success');
+        break;
+      case 'failed':
+        $('.orchestration-status').addClass('text-danger');
+        break;
+      default:
+        break;
+    }
+  },
+
   handleAdminUpdate: function(admin) {
     var $notification = $('.admin-outdated-notification');
 
@@ -328,9 +351,20 @@ MinionPoller = {
   },
 
   alertFailedBootstrap: function() {
-    if (!$('.failed-bootstrap-alert').length) {
-      showAlert('At least one of the nodes is in a failed state. Please run "supportconfig" on the failed node(s) to gather the logs.', 'alert', 'failed-bootstrap-alert');
+    var cachedFailedLastOrchestration = window.localStorage.getItem('failedLastOrchestrationAt');
+
+    if ($('.failed-bootstrap-alert').length ||
+        (State.lastOrchestration && cachedFailedLastOrchestration === State.lastOrchestration.created_at)) {
+      return;
     }
+
+    var $alert = showAlert('At least one of the nodes is in a failed state. Please run "supportconfig" on the failed node(s) to gather the logs.', 'alert', 'failed-bootstrap-alert');
+
+    window.localStorage.removeItem('failedLastOrchestrationAt');
+    $alert.on('closed.bs.alert', function () {
+      window.localStorage.setItem('failedLastOrchestrationAt', State.lastOrchestration.created_at);
+      $alert.off('closed.bs.alert');
+    })
   },
 
   renderDashboard: function(minion) {

@@ -18,7 +18,8 @@ module Discovery
           cloud_jobs_failed:                 SaltJob.failed.count,
           admin:                             Minion.find_by(minion_id: "admin"),
           retryable_bootstrap_orchestration: Orchestration.retryable?(kind: :bootstrap),
-          retryable_upgrade_orchestration:   Orchestration.retryable?(kind: :upgrade)
+          retryable_upgrade_orchestration:   Orchestration.retryable?(kind: :upgrade),
+          last_orchestration:                Orchestration.last
         }
         render json: hsh
       end

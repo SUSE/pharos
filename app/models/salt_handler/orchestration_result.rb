@@ -49,7 +49,7 @@ class SaltHandler::OrchestrationResult < SaltHandler::Orchestration
   def update_minions(orchestration_type:, orchestration_succeeded:)
     case orchestration_type
     when "orch.kubernetes", "orch.update"
-      update_pending_minions orchestration_succeeded: orchestration_succeeded
+      update_all_minions orchestration_succeeded: orchestration_succeeded
     when "orch.removal"
       update_pending_removal_minions orchestration:           orchestration,
                                      orchestration_succeeded: orchestration_succeeded
@@ -58,12 +58,12 @@ class SaltHandler::OrchestrationResult < SaltHandler::Orchestration
     end
   end
 
-  def update_pending_minions(orchestration_succeeded:)
+  def update_all_minions(orchestration_succeeded:)
     # rubocop:disable SkipsModelValidations
     if orchestration_succeeded
-      Minion.pending.update_all highstate: Minion.highstates[:applied]
+      Minion.assigned_role.update_all highstate: Minion.highstates[:applied]
     else
-      Minion.pending.update_all highstate: Minion.highstates[:failed]
+      Minion.assigned_role.update_all highstate: Minion.highstates[:failed]
     end
     # rubocop:enable SkipsModelValidations
   end

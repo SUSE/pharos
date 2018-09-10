@@ -71,11 +71,11 @@ describe SaltHandler::MinionHighstate do
       expect(handler.process_event).to be(true)
     end
 
-    it "does not update the matching Minion's highstate column if it's success" do
+    it "updates the matching Minion's highstate column if it's success" do
       matching_minion
 
       expect { handler.process_event }
-        .not_to(change { matching_minion.reload.highstate })
+        .to(change { matching_minion.reload.highstate }.from("pending").to("applied"))
     end
 
     it "updates the matching Minion's highstate column if it's failure" do
