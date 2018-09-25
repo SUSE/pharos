@@ -11,3 +11,4 @@
 /env.sh
 .rspec
 /.vagrant
+.idea
