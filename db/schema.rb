@@ -140,6 +140,7 @@ ActiveRecord::Schema.define(version: 20181715075511) do
     t.string   "worker_id",    limit: 255
   end
 
+  add_index "salt_events", ["alter_time"], name: "index_alter_time", using: :btree
   add_index "salt_events", ["processed_at"], name: "index_salt_events_on_processed_at", using: :btree
   add_index "salt_events", ["tag"], name: "tag", using: :btree
   add_index "salt_events", ["worker_id", "taken_at"], name: "index_salt_events_on_worker_id_and_taken_at", using: :btree

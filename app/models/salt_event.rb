@@ -6,7 +6,7 @@ class SaltEvent < ApplicationRecord
   # We consider events which were taken 5 minutes ago but not yet processed as
   # if the worker died so we reassign them for processing.
   PROCESS_TIMEOUT_MIN = 5
-  NO_EVENTS_TIMEOUT_SEC = 5
+  NO_EVENTS_TIMEOUT_SEC = 3600
 
   ENABLED_EVENT_HANDLERS = [
     SaltHandler::MinionStart,
@@ -52,13 +52,15 @@ class SaltEvent < ApplicationRecord
   def self.purge_jobs_older_than(date)
     # :nocov:
     ActiveRecord::Base.connection.execute("
-     delete from `jids` where jid in (select distinct jid from salt_returns
-                                      where alter_time < #{date.to_i})
+      delete from `jids` where jid in (select distinct jid from salt_returns
+                                       where alter_time < #{date.to_i})
     ")
     [:events, :returns].each do |table|
       ActiveRecord::Base.connection.execute("
-        delete from `salt_#{table}` where alter_time < #{date.to_i};
-    ")
+        delete from `salt_#{table}` where id in(
+                  select `#{table}_temp.id` from ( select id from `salt_#{table}`
+                                     where alter_time < #{date.to_i} ) `#{table}_temp` );
+      ")
     end
     # :nocov:
   end
