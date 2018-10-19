@@ -20,7 +20,10 @@ class Pillar < ApplicationRecord
     end
 
     def all_pillars
-      simple_pillars.merge(cloud_pillars).merge(cpi_pillars)
+      simple_pillars
+        .merge(cloud_pillars)
+        .merge(cpi_pillars)
+        .merge(kube_master_pillars)
     end
 
     # rubocop:disable Metrics/MethodLength
@@ -78,6 +81,14 @@ class Pillar < ApplicationRecord
       }
     end
     # rubocop:enable Metrics/MethodLength
+
+    def kube_master_pillars
+      {
+        api_admission_webhook_enabled: "api:admission_webhook:enabled",
+        api_admission_webhook_cert:    "api:admission_webhook:cert",
+        api_admission_webhook_key:     "api:admission_webhook:key"
+      }
+    end
 
     # rubocop:disable Layout/AlignHash
     def cloud_pillars
