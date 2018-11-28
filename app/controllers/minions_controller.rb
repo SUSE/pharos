@@ -1,6 +1,5 @@
 # Allows to manage Minions
 class MinionsController < ApplicationController
-  before_action :not_implemented_in_public_cloud
   before_action :fetch_minion
 
   def destroy
@@ -20,12 +19,6 @@ class MinionsController < ApplicationController
   end
 
   private
-
-  # Public Cloud frameworks do not currently support removing nodes
-  def not_implemented_in_public_cloud
-    return unless ["azure", "ec2", "gce"].include? Pillar.value(pillar: :cloud_framework)
-    render nothing: true, status: :not_implemented
-  end
 
   def fetch_minion
     @minion = Minion.find_by! minion_id: params[:id]

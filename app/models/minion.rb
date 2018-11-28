@@ -13,13 +13,6 @@ class Minion < ApplicationRecord
   validates :minion_id, presence: true, uniqueness: true
   validates :fqdn, presence: true
 
-  # override the json formatter to include the cloud_framework method
-  def as_json(options = {})
-    options[:methods] ||= []
-    options[:methods] << :cloud_framework
-    super
-  end
-
   # Update all minions grains
   def self.update_grains
     # rubocop:disable Lint/HandleExceptions, SkipsModelValidations
@@ -138,11 +131,5 @@ class Minion < ApplicationRecord
   # Returns the proxy for the salt minion
   def salt
     @salt ||= Velum::SaltMinion.new minion: self
-  end
-
-  # The framework where this minion is running
-  # (currently all minions must be in the same framework)
-  def cloud_framework
-    Pillar.value(pillar: :cloud_framework)
   end
 end
