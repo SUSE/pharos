@@ -14,7 +14,8 @@ class SaltEvent < ApplicationRecord
     SaltHandler::OrchestrationTrigger,
     SaltHandler::OrchestrationResult,
     SaltHandler::CloudBootstrap,
-    SaltHandler::AuthEvent
+    SaltHandler::AuthEvent,
+    SaltHandler::CloudEvent
   ].freeze
 
   scope :not_processed, -> { where(processed_at: nil) }
