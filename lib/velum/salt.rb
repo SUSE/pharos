@@ -79,17 +79,17 @@ module Velum
                             data:     { client: "local",
                                         tgt:    "admin",
                                         fun:    "cloud.query" })
-      if res.body.include?(minion_id)
-        res = perform_request(endpoint: "/", method:   "post",
-                              data:     { client: "local_async",
-                                          tgt:    "admin",
-                                          fun:    "cloud.destroy",
-                                          arg:    [ minion_id ] })
+      res = if res.body.include?(minion_id)
+        perform_request(endpoint: "/", method:   "post",
+                        data:     { client: "local_async",
+                                    tgt:    "admin",
+                                    fun:    "cloud.destroy",
+                                    arg:    [minion_id] })
       else
-        res = perform_request(endpoint: "/", method: "post",
-                              data: { client: "wheel",
-                                      fun:    "key.delete",
-                                      match:  minion_id })
+        perform_request(endpoint: "/", method: "post",
+                        data: { client: "wheel",
+                                fun:    "key.delete",
+                                match:  minion_id })
       end
       JSON.parse(res.body)
     end
