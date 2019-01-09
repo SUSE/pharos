@@ -233,7 +233,8 @@ MinionPoller = {
 
         handleBootstrapErrors();
         handleUnsupportedClusterConfiguration();
-        showRepoMirrorAlert(data.admin);
+        // FIXME: uncomment when v4 gets released
+        //showRepoMirrorAlert(data.admin);
 
         // show/hide "update all nodes" link
         var hasAdminNodeUpdate = data.admin.tx_update_reboot_needed || data.admin.tx_update_failed;

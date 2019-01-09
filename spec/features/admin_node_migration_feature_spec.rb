@@ -61,6 +61,7 @@ describe "Manage nodes migration feature", js: true do
 
   context "when SMT/RMT mirror is out of sync" do
     before do
+      skip("FIXME: drop pending when v4 gets released")
       # rubocop:disable Rails/SkipsModelValidations
       Minion.update_all(
         tx_update_migration_available:     true,
