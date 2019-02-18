@@ -20,6 +20,9 @@ RSpec.configure do |config|
   # have to just set this to false.
   config.use_transactional_fixtures = false
 
+  config.include(Shoulda::Matchers::ActiveModel, type: :model)
+  config.include(Shoulda::Matchers::ActiveRecord, type: :model)
+
   config.include JsonSpecHelper, type: :controller
 
   config.infer_spec_type_from_file_location!

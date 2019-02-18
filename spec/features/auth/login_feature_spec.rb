@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe "Feature: login dialog" do
+describe "Feature: login dialog", js: true do
   let!(:user) { create(:user) }
 
   before do
@@ -24,7 +24,7 @@ describe "Feature: login dialog" do
 
   it "shows an error message when using invalid credentials" do
     # pending("fix the validations")
-    fill_in "user_email", with: "foo"
+    fill_in "user_email", with: "foo@bar.com"
     fill_in "user_password", with: "bar"
     click_button("Log in")
 

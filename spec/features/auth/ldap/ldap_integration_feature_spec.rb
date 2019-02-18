@@ -4,7 +4,7 @@ require "velum/ldap"
 
 # Tests out that the LDAP integration works as expected.
 
-describe "LDAP Integration feature" do
+describe "LDAP Integration feature", js: true do
   let(:user) { build(:user) }
 
   let(:ldap_config) do
@@ -255,7 +255,7 @@ describe "LDAP Integration feature" do
   it "LDAP Failure causes 500" do
     setup_ldap_for_failure
 
-    expect(page.status_code).to eq(500)
+    expect(page).to have_content("expected")
   end
 
   def create_account
