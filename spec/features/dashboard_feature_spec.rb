@@ -132,11 +132,9 @@ describe "Dashboard" do
       within ".minion_#{minions[3].minion_id}" do
         click_on "Reject"
       end
-      page.accept_alert do
-        expect(page).to have_content("Rejection in progress")
-      end
       setup_stubbed_reject_minion!(stubbed: minions[3].minion_id)
 
+      page.driver.browser.switch_to.alert.accept
       expect(page).to have_content("Rejection in progress")
     end
 
