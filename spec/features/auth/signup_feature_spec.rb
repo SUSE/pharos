@@ -23,7 +23,7 @@ describe "Signup feature" do
     # password confirmation doesn't match Password
     fill_in "user_email", with: user.email
     fill_in "user_password", with: "12341234"
-    fill_in "user_password_confirmation", with: "532"
+    fill_in "user_password_confirmation", with: "43214321"
     click_button("Create Admin")
     expect(page).to have_content("Password confirmation doesn't match Password")
 
