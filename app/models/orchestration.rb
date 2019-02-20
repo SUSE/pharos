@@ -38,7 +38,7 @@ class Orchestration < ApplicationRecord
   end
 
   def self.runnable?
-    Orchestration.in_progress.empty?
+    !Orchestration.last.try(:in_progress?)
   end
 
   def self.retryable?(kind: :bootstrap)
