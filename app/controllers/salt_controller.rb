@@ -1,7 +1,7 @@
 require "velum/salt"
 # SaltController holds methods for triggering updates of nodes
 class SaltController < ApplicationController
-  before_action :not_implemented_in_public_cloud
+  before_action :not_implemented_in_public_cloud, only: [:remove_minion]
   skip_before_action :redirect_to_setup
 
   def update

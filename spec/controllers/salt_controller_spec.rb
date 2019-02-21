@@ -20,6 +20,15 @@ RSpec.describe SaltController, type: :controller do
         expect(response.status).to eq 302
       end
     end
+
+    it "is implemented in the public cloud" do
+      create(:ec2_pillar)
+
+      VCR.use_cassette("salt/update_orch", record: :none) do
+        post :update
+        expect(response.status).to eq 302
+      end
+    end
   end
 
   describe "POST /accept-minion" do
