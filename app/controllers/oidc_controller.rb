@@ -1,5 +1,31 @@
 require "velum/kubernetes"
 
+# bsc#1121166
+# monkey patch Ruby 2.1.9 Base64 module
+#
+# a fix [0] is missing in our ruby codebase which correctly
+# decodes urlsafe strings
+#
+# [0] https://github.com/ruby/ruby/blob/4444025d16ae1a586eee6a0ac9bdd09e33833f3c/lib/base64.rb#L97-L106
+module Base64
+  class << self
+    def urlsafe_decode64(str)
+      # NOTE: RFC 4648 does say nothing about unpadded input, but says that
+      # "the excess pad characters MAY also be ignored", so it is inferred that
+      # unpadded input is also acceptable.
+      str = str.tr("-_", "+/")
+      if !str.end_with?("=") && str.length % 4 != 0
+        str = str.ljust((str.length + 3) & ~3, "=")
+      end
+      strict_decode64(str)
+    end
+
+    def strict_decode64(str)
+      str.unpack("m0").first
+    end
+  end
+end
+
 # OidcController is used for performing an OpenID Connect auth
 # flow against Dex, allowing Velum to generate a complete kubeconfig
 # file for a user, including their JWT token
