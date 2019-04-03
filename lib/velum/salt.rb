@@ -73,10 +73,24 @@ module Velum
 
     # Removes a minion from the cluster
     def self.remove_minion(minion_id: "")
-      res = perform_request(endpoint: "/", method: "post",
-                            data: { client: "wheel",
-                                    fun:    "key.delete",
-                                    match:  minion_id })
+      # cloud minions need to be terminated, which will also
+      # remove its salt key from the master
+      res = perform_request(endpoint: "/", method:   "post",
+                            data:     { client: "local",
+                                        tgt:    "admin",
+                                        fun:    "cloud.query" })
+      res = if res.body.include?(minion_id)
+        perform_request(endpoint: "/", method:   "post",
+                        data:     { client: "local_async",
+                                    tgt:    "admin",
+                                    fun:    "cloud.destroy",
+                                    arg:    [minion_id] })
+      else
+        perform_request(endpoint: "/", method: "post",
+                        data: { client: "wheel",
+                                fun:    "key.delete",
+                                match:  minion_id })
+      end
       JSON.parse(res.body)
     end
 
