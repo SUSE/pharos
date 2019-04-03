@@ -8,5 +8,34 @@ setup_root_ca() {
   update-ca-certificates
 }
 
+check_ldap() {
+  set +e
+
+  TIMEOUT=90
+  COUNT=0
+  RETRY=1
+
+  while [ $RETRY -ne 0 ]; do
+    case $(bundle exec rails r bin/check_ldap.rb | grep LDAP) in
+      "LDAP_DOWN")
+        if [ "$COUNT" -ge "$TIMEOUT" ]; then
+          printf " [FAIL]\n"
+          echo "Timeout reached, exiting with error"
+          exit 1
+        fi
+        echo "Waiting for ldap to be ready in 5 seconds"
+        sleep 5
+        COUNT=$((COUNT+5))
+        ;;
+      *)
+        echo "LDAP is ready"
+        break
+        ;;
+    esac
+  done
+  set -e
+}
+
 setup_root_ca
+check_ldap
 bundle exec "puma -C config/puma.rb"
