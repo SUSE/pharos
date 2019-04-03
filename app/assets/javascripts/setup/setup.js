@@ -45,7 +45,10 @@ $(function () {
     } else {
       openstackSettings.settingsDisabled();
     }
-  }
+  };
+
+  new BootstrapSettings(".bootstrap-settings");
+
 
   $(document).on('change', 'input[name="settings[cloud_provider]"]', toggleOpenStackSettings);
   toggleOpenStackSettings();

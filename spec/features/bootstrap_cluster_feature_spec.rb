@@ -226,6 +226,31 @@ describe "Bootstrap cluster feature" do
       expect(page).to have_content(minions[4].fqdn)
     end
 
+    it "A user cannot bootstrap the cluster with external FQDN ending in a dot", js: true do
+      # wait for all minions to be there
+      expect(page).to have_content(minions[0].fqdn)
+      expect(page).to have_content(minions[1].fqdn)
+      expect(page).to have_content(minions[2].fqdn)
+      expect(page).to have_content(minions[3].fqdn)
+      # select master minion0.k8s.local
+      find(".minion_#{minions[0].id} .master-btn").click
+      # select all nodes
+      find(".select-nodes-btn").click
+
+      click_on_when_enabled "#set-roles"
+
+      # means it went to the confirmation page
+      expect(page).to have_content("Confirm bootstrap")
+      fill_in("External Kubernetes API FQDN", with: "some.url.")
+      fill_in("External Dashboard FQDN", with: "some.url.")
+      velum_error_msg = find(".trailing-dot-velum")
+      k8s_error_msg = find(".trailing-dot-k8s")
+      submit_btn = find("#bootstrap")
+      expect(velum_error_msg).not_to have_selector(:css, "hidden")
+      expect(k8s_error_msg).not_to have_selector(:css, "hidden")
+      expect(submit_btn["disabled"]).to eq(true)
+    end
+
     it "A user cannot bootstrap nodes with conflicting hostnames", js: true do
       duplicated = Minion.create! [{ minion_id: SecureRandom.hex, fqdn: "minion99.k8s.local" },
                                    { minion_id: SecureRandom.hex, fqdn: "minion99.k8s.local" }]

@@ -1,20 +1,22 @@
 h1 Confirm bootstrap
 
 = form_for :settings, url: setup_bootstrap_path, method: :post do |f|
-  .panel.panel-default
+  .panel.panel-default.bootstrap-settings
     .panel-heading
       h3.panel-title Cluster specific settings
     .panel-body
-      .form-group
+      .form-group.form-group-external-kubernetes
         = f.label :apiserver, "External Kubernetes API FQDN"
+        .trailing-dot-k8s.text-danger.hidden FQDNs with trailing dots cause problems in TLS, please do not use a trailing dot.
         .input-group
           = f.text_field :apiserver, value: @apiserver, class: "form-control", required: true
           span class="input-group-addon"
             a data-toggle="tooltip" data-placement="left" title="Fully qualified domain name used to reach the cluster from the outside. In a simple, single master deployment this will be the FQDN of the node you are about to select as master. For advanced options refer to the documentation."
               i class='glyphicon glyphicon-info-sign'
 
-      .form-group
+      .form-group.form-group-external-velum
         = f.label :dashboard_external_fqdn, "External Dashboard FQDN"
+        .trailing-dot-velum.text-danger.hidden FQDNs with trailing dots cause problems in TLS, please do not use a trailing dot.
         .input-group
           = f.text_field :dashboard_external_fqdn, value: @dashboard_external_fqdn, class: "form-control", required: true
           span class="input-group-addon"
