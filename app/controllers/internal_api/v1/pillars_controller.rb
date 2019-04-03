@@ -38,6 +38,7 @@ class InternalApi::V1::PillarsController < InternalApiController
   def registry_contents
     registries = Registry.all.map do |reg|
       registry = {}
+      registry[:name] = reg.name
       registry[:url]  = reg.url
       registry[:cert] = reg.certificate.try(:certificate)
       reg.registry_mirrors.each do |mirror|
